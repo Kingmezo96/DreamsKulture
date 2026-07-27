@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       type: "website",
       url: origin,
-      images: [{ url: `${origin}/og.png`, width: 1731, height: 909, alt: "Dreams Kulture — Faith, thoughtfully worn" }],
+      images: [{ url: `${origin}/og.png`, width: 1732, height: 908, alt: "Dreams Kulture — Faith, thoughtfully worn" }],
     },
     twitter: {
       card: "summary_large_image",
