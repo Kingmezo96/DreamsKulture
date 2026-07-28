@@ -31,6 +31,7 @@ h1,h2,h3{font-family:var(--font-display);font-weight:400;color:var(--black)}
 .mol-header__actions{display:flex;align-items:center;gap:22px}
 .mol-header__actions button{width:24px;height:30px;padding:4px;border:0;background:transparent;position:relative}
 .mol-header__actions img{width:18px;height:18px;margin:auto}
+.header-icon-link{width:24px;height:30px;padding:4px;display:grid;place-items:center;position:relative}
 .header-bag span{width:17px;height:17px;display:grid;place-items:center;position:absolute;top:-2px;right:-8px;border-radius:50%;background:var(--black);color:#fff;font-size:8px}
 .mobile-menu-button{display:none;width:26px;padding:0;border:0;background:transparent}
 .mobile-menu-button span{display:block;height:1px;margin:6px 0;background:var(--black)}
@@ -297,3 +298,14 @@ h1,h2,h3{font-family:var(--font-display);font-weight:400;color:var(--black)}
   .shop-layout{width:calc(100% - 36px);padding-top:60px;padding-bottom:95px;display:block}.shop-sidebar{display:block}.shop-search,.shop-filter,.shop-filter__clear{margin-bottom:35px}.shop-filter{padding-bottom:28px}.shop-filter__clear{margin-top:0}.shop-toolbar{padding-bottom:15px;align-items:flex-start;flex-direction:column}.shop-toolbar label{width:100%;justify-content:space-between}.shop-toolbar select{min-width:190px}.shop-product-grid{grid-template-columns:1fr 1fr;gap:42px 12px}.shop-product-card__image{height:260px}.shop-product-card__bottom{align-items:flex-start;flex-direction:column}.shop-product-card__image>a{display:none}.shop-pagination{margin-top:55px}
 }
 @media(max-width:390px){.shop-product-grid{grid-template-columns:1fr}.shop-product-card__image{height:420px}}
+
+/* one shared store header across home and inner pages */
+.mol-header--inner{position:relative;background:#fff}
+.mol-header--inner .mol-header__inner{height:120px}
+@media(max-width:900px){
+  .mol-header--inner{position:relative}
+  .mol-header--inner .mol-header__inner{height:82px}
+  .mol-header--inner .mol-nav{top:82px}
+  .mol-header--inner .mol-header__actions .header-icon-link:nth-child(1),
+  .mol-header--inner .mol-header__actions .header-icon-link:nth-child(2){display:none}
+}
