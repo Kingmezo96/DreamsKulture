@@ -336,17 +336,17 @@ create policy "profiles_update_own" on public.profiles for update to authenticat
 drop policy if exists "sellers_select_public" on public.sellers;
 create policy "sellers_select_public" on public.sellers for select to anon, authenticated using (active);
 drop policy if exists "sellers_manage_own" on public.sellers;
-create policy "sellers_manage_own" on public.sellers for all to authenticated using ((select auth.uid()) = id or coalesce((select auth.jwt())->'app_metadata'->>'role', '') = 'admin') with check ((select auth.uid()) = id or coalesce((select auth.jwt())->'app_metadata'->>'role', '') = 'admin');
+create policy "sellers_manage_own" on public.sellers for all to authenticated using ((select auth.uid()) = id or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') = 'admin') with check ((select auth.uid()) = id or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') = 'admin');
 
 drop policy if exists "categories_select_active" on public.categories;
 create policy "categories_select_active" on public.categories for select to anon, authenticated using (active);
 drop policy if exists "categories_manage_staff" on public.categories;
-create policy "categories_manage_staff" on public.categories for all to authenticated using (coalesce((select auth.jwt())->'app_metadata'->>'role', '') in ('admin','seller')) with check (coalesce((select auth.jwt())->'app_metadata'->>'role', '') in ('admin','seller'));
+create policy "categories_manage_staff" on public.categories for all to authenticated using (coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') in ('admin','seller')) with check (coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') in ('admin','seller'));
 
 drop policy if exists "products_select_active" on public.products;
 create policy "products_select_active" on public.products for select to anon, authenticated using (status = 'active');
 drop policy if exists "products_manage_staff" on public.products;
-create policy "products_manage_staff" on public.products for all to authenticated using ((select auth.uid()) = seller_id or coalesce((select auth.jwt())->'app_metadata'->>'role', '') = 'admin') with check ((select auth.uid()) = seller_id or coalesce((select auth.jwt())->'app_metadata'->>'role', '') = 'admin');
+create policy "products_manage_staff" on public.products for all to authenticated using ((select auth.uid()) = seller_id or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') = 'admin') with check ((select auth.uid()) = seller_id or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') = 'admin');
 
 drop policy if exists "variants_select_active" on public.product_variants;
 create policy "variants_select_active" on public.product_variants for select to anon, authenticated using (active and exists (select 1 from public.products p where p.id = product_id and p.status = 'active'));
@@ -357,14 +357,14 @@ using (
   exists (
     select 1 from public.products p
     where p.id = product_id
-      and ((select auth.uid()) = p.seller_id or coalesce((select auth.jwt())->'app_metadata'->>'role', '') = 'admin')
+      and ((select auth.uid()) = p.seller_id or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') = 'admin')
   )
 )
 with check (
   exists (
     select 1 from public.products p
     where p.id = product_id
-      and ((select auth.uid()) = p.seller_id or coalesce((select auth.jwt())->'app_metadata'->>'role', '') = 'admin')
+      and ((select auth.uid()) = p.seller_id or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') = 'admin')
   )
 );
 
@@ -380,16 +380,16 @@ drop policy if exists "wishlist_items_owner_all" on public.wishlist_items;
 create policy "wishlist_items_owner_all" on public.wishlist_items for all to authenticated using (exists (select 1 from public.wishlists w where w.id = wishlist_id and w.customer_id = (select auth.uid()))) with check (exists (select 1 from public.wishlists w where w.id = wishlist_id and w.customer_id = (select auth.uid())));
 
 drop policy if exists "orders_customer_select" on public.orders;
-create policy "orders_customer_select" on public.orders for select to authenticated using ((select auth.uid()) = customer_id or coalesce((select auth.jwt())->'app_metadata'->>'role', '') in ('admin','seller'));
+create policy "orders_customer_select" on public.orders for select to authenticated using ((select auth.uid()) = customer_id or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') in ('admin','seller'));
 drop policy if exists "order_items_customer_select" on public.order_items;
-create policy "order_items_customer_select" on public.order_items for select to authenticated using (exists (select 1 from public.orders o where o.id = order_id and (o.customer_id = (select auth.uid()) or coalesce((select auth.jwt())->'app_metadata'->>'role', '') in ('admin','seller'))));
+create policy "order_items_customer_select" on public.order_items for select to authenticated using (exists (select 1 from public.orders o where o.id = order_id and (o.customer_id = (select auth.uid()) or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') in ('admin','seller'))));
 drop policy if exists "payments_customer_select" on public.payments;
-create policy "payments_customer_select" on public.payments for select to authenticated using (exists (select 1 from public.orders o where o.id = order_id and (o.customer_id = (select auth.uid()) or coalesce((select auth.jwt())->'app_metadata'->>'role', '') in ('admin','seller'))));
+create policy "payments_customer_select" on public.payments for select to authenticated using (exists (select 1 from public.orders o where o.id = order_id and (o.customer_id = (select auth.uid()) or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') in ('admin','seller'))));
 drop policy if exists "shipments_customer_select" on public.shipments;
-create policy "shipments_customer_select" on public.shipments for select to authenticated using (exists (select 1 from public.orders o where o.id = order_id and (o.customer_id = (select auth.uid()) or coalesce((select auth.jwt())->'app_metadata'->>'role', '') in ('admin','seller'))));
+create policy "shipments_customer_select" on public.shipments for select to authenticated using (exists (select 1 from public.orders o where o.id = order_id and (o.customer_id = (select auth.uid()) or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') in ('admin','seller'))));
 
 drop policy if exists "reviews_select_published" on public.reviews;
-create policy "reviews_select_published" on public.reviews for select to anon, authenticated using (published or customer_id = (select auth.uid()) or coalesce((select auth.jwt())->'app_metadata'->>'role', '') in ('admin','seller'));
+create policy "reviews_select_published" on public.reviews for select to anon, authenticated using (published or customer_id = (select auth.uid()) or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') in ('admin','seller'));
 drop policy if exists "reviews_insert_own" on public.reviews;
 create policy "reviews_insert_own" on public.reviews for insert to authenticated with check ((select auth.uid()) = customer_id);
 drop policy if exists "reviews_update_own" on public.reviews;
@@ -398,11 +398,11 @@ create policy "reviews_update_own" on public.reviews for update to authenticated
 drop policy if exists "custom_requests_submit" on public.custom_requests;
 create policy "custom_requests_submit" on public.custom_requests for insert to anon, authenticated with check (customer_id is null or customer_id = (select auth.uid()));
 drop policy if exists "custom_requests_view_own_or_staff" on public.custom_requests;
-create policy "custom_requests_view_own_or_staff" on public.custom_requests for select to authenticated using (customer_id = (select auth.uid()) or coalesce((select auth.jwt())->'app_metadata'->>'role', '') in ('admin','seller'));
+create policy "custom_requests_view_own_or_staff" on public.custom_requests for select to authenticated using (customer_id = (select auth.uid()) or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') in ('admin','seller'));
 drop policy if exists "newsletter_subscribe" on public.newsletter_subscribers;
 create policy "newsletter_subscribe" on public.newsletter_subscribers for insert to anon, authenticated with check (active);
 drop policy if exists "inventory_staff" on public.inventory_movements;
-create policy "inventory_staff" on public.inventory_movements for all to authenticated using (seller_id = (select auth.uid()) or coalesce((select auth.jwt())->'app_metadata'->>'role', '') = 'admin') with check (seller_id = (select auth.uid()) or coalesce((select auth.jwt())->'app_metadata'->>'role', '') = 'admin');
+create policy "inventory_staff" on public.inventory_movements for all to authenticated using (seller_id = (select auth.uid()) or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') = 'admin') with check (seller_id = (select auth.uid()) or coalesce(((select auth.jwt()) -> 'app_metadata' ->> 'role'), '') = 'admin');
 
 grant select on public.categories, public.products, public.product_variants, public.sellers, public.reviews to anon, authenticated;
 grant insert on public.custom_requests, public.newsletter_subscribers to anon, authenticated;

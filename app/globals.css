@@ -118,11 +118,11 @@ h1,h2,h3{font-family:var(--font-display);font-weight:400;color:var(--black)}
 /* products */
 .catalog-section,.bestsellers{padding-top:90px;padding-bottom:145px}
 .section-title{text-align:center}.section-title h2{margin:0 0 18px;font-size:42px;line-height:1}.section-title p{max-width:560px;margin:0 auto 35px}
-.product-tabs{margin:28px 0 36px;display:flex;justify-content:center;flex-wrap:wrap;gap:28px;position:relative}
+.product-tabs{margin:28px auto 36px;padding:12px 0 10px;display:flex;justify-content:center;flex-wrap:wrap;gap:28px;position:sticky;top:82px;z-index:12;background:rgba(255,255,255,.94);backdrop-filter:blur(12px)}
 .product-tabs:after{content:"";position:absolute;bottom:-15px;width:100%;height:1px;background:#eee}
-.product-tabs button{padding:0 0 11px;border:0;border-bottom:2px solid transparent;background:transparent;position:relative;z-index:2;font:500 15px/24px var(--font-body);color:rgba(0,0,0,.48)}
+.product-tabs button{padding:0 0 11px;border:0;border-bottom:2px solid transparent;background:transparent;position:relative;z-index:2;font:500 15px/24px var(--font-body);color:rgba(0,0,0,.48);transition:color .2s ease,border-color .2s ease}
 .product-tabs button.active{border-color:#000;color:#000}
-.catalog-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;position:relative;z-index:2}
+.catalog-grid{min-height:455px;display:grid;grid-template-columns:repeat(4,1fr);gap:30px;position:relative;z-index:2}
 .catalog-card__visual{width:100%;padding:0;border:0;background:#f8f8fb;position:relative;overflow:hidden;text-align:left}
 .catalog-card__visual:after{content:"";position:absolute;inset:0;background:rgba(68,68,68,.13);opacity:0;transition:opacity .45s ease}
 .catalog-card__visual:hover:after{opacity:1}

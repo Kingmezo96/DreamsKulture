@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 type Product = {
   id: number;
@@ -32,6 +32,7 @@ const products: Product[] = [
   { id: 9, name: "Coffee & Grace Set", category: "Gift Sets", collection: "Gifts & Home", price: 30, message: "COFFEE & GRACE", scripture: "Psalm 90:14", tone: "stone", image: "/campaign/faith-accessories.png", badge: "sale", sizes: ["Gift set"], colors: ["Ivory & Sage"] },
   { id: 10, name: "Peace, Be Still Cushion", category: "Home", collection: "Gifts & Home", price: 20, message: "PEACE, BE STILL", scripture: "Mark 4:39", tone: "paper", image: "/campaign/faith-at-home.png", sizes: ["18 × 18 in"], colors: ["Cream", "Sage"] },
   { id: 11, name: "Write the Vision Journal", category: "Journals", collection: "Gifts & Home", price: 12, message: "WRITE THE VISION", scripture: "Habakkuk 2:2", tone: "clay", image: "/campaign/faith-at-home.png", sizes: ["A5"], colors: ["Maroon", "Cream"] },
+  { id: 12, name: "Grace Lives Here Frame", category: "Frames", collection: "Gifts & Home", price: 30, message: "GRACE LIVES HERE", scripture: "Joshua 24:15", tone: "paper", image: "/campaign/faith-at-home.png", sizes: ["8×10 in", "11×14 in", "16×20 in"], colors: ["Ivory", "Black"] },
 ];
 
 const heroSlides = [
@@ -41,6 +42,7 @@ const heroSlides = [
 ];
 
 const categories = ["All", "Couples Collection", "Women", "Men", "Faith Tees", "Gifts & Home"];
+const categoryStorageKey = "dreams-kulture-featured-category";
 const money = (value: number) => `$${value.toFixed(2)}`;
 
 function BrandLogo({ light = false }: { light?: boolean }) {
@@ -77,6 +79,7 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [heroIndex, setHeroIndex] = useState(0);
   const [category, setCategory] = useState("All");
+  const tabsRef = useRef<HTMLDivElement | null>(null);
   const [selected, setSelected] = useState<Product | null>(null);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
@@ -100,13 +103,23 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const storedCategory = window.localStorage.getItem(categoryStorageKey);
+    if (storedCategory && categories.includes(storedCategory)) setCategory(storedCategory);
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(categoryStorageKey, category);
+    tabsRef.current?.querySelector<HTMLButtonElement>(".active")?.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
+  }, [category]);
+
+  useEffect(() => {
     const items = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("is-visible"));
     }, { threshold: 0.12 });
     items.forEach((item) => observer.observe(item));
     return () => observer.disconnect();
-  }, []);
+  }, [category]);
 
   const visibleProducts = useMemo(() => products.filter((product) => {
     if (category === "All") return true;
@@ -216,8 +229,8 @@ export default function Home() {
 
       <section className="catalog-section page-wrap" id="shop">
         <div className="section-title" data-reveal><span className="category-subtitle"><b>new</b> collections</span><h2>Featured products</h2></div>
-        <div className="product-tabs" role="tablist" aria-label="Product categories">{categories.map((item) => <button role="tab" aria-selected={category === item} key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{item}</button>)}</div>
-        <div className="catalog-grid">{visibleProducts.map((product) => <ProductCard key={product.id} product={product} onOpen={openProduct} />)}</div>
+        <div className="product-tabs" ref={tabsRef} role="tablist" aria-label="Product categories">{categories.map((item) => <button role="tab" aria-selected={category === item} aria-controls="featured-products-grid" key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{item}</button>)}</div>
+        <div className="catalog-grid" id="featured-products-grid" role="tabpanel" aria-label={`${category} products`}>{visibleProducts.map((product) => <ProductCard key={product.id} product={product} onOpen={openProduct} />)}</div>
         <img className="catalog-dots" src="/mollee/vector-catalog.svg" alt="" />
         <button className="mol-button catalog-more" onClick={() => setCategory("All")}><span>Show all products</span></button>
       </section>
