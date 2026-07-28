@@ -168,7 +168,7 @@ export default function Home() {
       <section className="mol-hero" id="home">
         <aside className="mol-hero__left">
           <div className="hero-count"><strong>{heroIndex + 1}</strong>/{heroSlides.length}</div>
-          <div className="side-socials"><a href="#">FB</a><a href="#">X</a><a href="#">INS</a><a href="#">PIN</a></div>
+          <div className="side-socials"><a href="#">FB</a><a href="#">X</a><a href="https://www.instagram.com/dreamskulture_/" target="_blank" rel="noreferrer" aria-label="Dreams Kulture on Instagram">INS</a><a href="#">PIN</a></div>
         </aside>
         <div className="mol-hero__center">
           {heroSlides.map((slide, index) => (
@@ -284,9 +284,9 @@ export default function Home() {
         <img className="footer-dots footer-dots--left" src="/mollee/vector-footer-left.svg" alt="" />
         <img className="footer-dots footer-dots--right" src="/mollee/vector-footer-right.svg" alt="" />
         <div className="mol-footer__top page-wrap">
-          <div className="footer-brand"><BrandLogo /><p>Faith-inspired apparel, prints and gifts—designed in Nigeria, delivered worldwide.</p><div className="footer-socials"><a href="#">FB</a><a href="#">X</a><a href="#">INS</a><a href="#">PIN</a></div></div>
+          <div className="footer-brand"><BrandLogo /><p>Faith-inspired apparel, prints and gifts—designed in Nigeria, delivered worldwide.</p><div className="footer-socials"><a href="#">FB</a><a href="#">X</a><a href="https://www.instagram.com/dreamskulture_/" target="_blank" rel="noreferrer" aria-label="Dreams Kulture on Instagram">INS</a><a href="#">PIN</a></div></div>
           <div className="footer-links"><div><h3>About</h3><a href="#collections">Collections</a><a href="#shop">Shop</a><a href="#journal">Journal</a><a href="#contact">Contact us</a></div><div><h3>Useful links</h3><a href="#">Privacy policy</a><a href="#">Terms of use</a><a href="#">Shipping details</a><a href="#">FAQs</a></div></div>
-          <div className="footer-contact"><h3>Visit & contact</h3><p>Lagos, Nigeria<br />Mon–Sat, 9am–6pm</p><a href="mailto:hello@dreamskulture.com">hello@dreamskulture.com</a><a href="https://wa.me/2340000000000">Chat on WhatsApp</a></div>
+          <div className="footer-contact"><h3>Visit & contact</h3><p>Lagos, Nigeria<br />Mon–Sat, 9am–6pm</p><a href="mailto:hello@dreamskulture.com">hello@dreamskulture.com</a><a href="https://wa.me/2348104268019" target="_blank" rel="noreferrer">+234 810 426 8019 · WhatsApp</a><a href="https://www.instagram.com/dreamskulture_/" target="_blank" rel="noreferrer">@dreamskulture_ · Instagram</a></div>
         </div>
         <div className="mol-footer__bottom page-wrap"><span>© 2026 Dreams Kulture</span><span>Designed with faith + intention</span></div>
       </footer>
@@ -298,7 +298,7 @@ export default function Home() {
       {checkoutOpen && <div className="overlay" role="dialog" aria-modal="true" aria-label="Checkout"><button className="overlay__backdrop" onClick={() => setCheckoutOpen(false)} aria-label="Close checkout" /><div className="checkout-modal"><button className="close-button" onClick={() => setCheckoutOpen(false)}>×</button>{orderPlaced ? <div className="order-success"><span>✓</span><p className="category-subtitle"><b>order</b> received</p><h2>Thank you for<br />choosing meaning.</h2><p>Your confirmation number is <b>DK-260727</b>. We have sent the next steps to your email.</p><button className="mol-button" onClick={() => { setCheckoutOpen(false); setOrderPlaced(false); setCart([]); }}><span>Continue shopping</span></button></div> : <><div className="checkout-head"><span className="category-subtitle"><b>secure</b> checkout</span><h2>Delivery details</h2><p>Guest checkout · Cards and bank transfer accepted</p></div><form className="checkout-form" onSubmit={(event) => { event.preventDefault(); setOrderPlaced(true); }}><div className="field-grid"><label>First name<input required /></label><label>Last name<input required /></label></div><label>Email<input required type="email" /></label><label>Phone number<input required type="tel" /></label><label>Country<select required defaultValue="Nigeria"><option>Nigeria</option><option>Ghana</option><option>United Kingdom</option><option>United States</option><option>Canada</option><option>Other international</option></select></label><label>Delivery address<input required placeholder="Street address" /></label><div className="field-grid"><label>City<input required /></label><label>State / region<input required /></label></div><div className="checkout-total"><span>Order total</span><strong>{money(subtotal + delivery)}</strong></div><label className="terms"><input type="checkbox" required /> I agree to the store terms, shipping and return policy.</label><button className="mol-button" type="submit"><span>Place demo order securely</span></button><small>This preview does not collect or charge payment details.</small></form></>}</div></div>}
 
       {formMessage && <div className="toast" role="status"><p>{formMessage}</p><button onClick={() => setFormMessage("")} aria-label="Dismiss message">×</button></div>}
-      <a className="whatsapp-float" href="https://wa.me/2340000000000" aria-label="Shop with us on WhatsApp"><span>◉</span><b>WhatsApp</b></a>
+      <a className="whatsapp-float" href="https://wa.me/2348104268019" target="_blank" rel="noreferrer" aria-label="Shop with Dreams Kulture on WhatsApp"><span>◉</span><b>WhatsApp</b></a>
     </main>
   );
 }
