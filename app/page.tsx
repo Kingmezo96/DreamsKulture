@@ -24,8 +24,8 @@ const products: Product[] = [
   { id: 1, name: "Walk by Faith Shirt", category: "Shirts", collection: "Faith Tees", price: 20, message: "WALK BY FAITH", scripture: "2 Corinthians 5:7", tone: "chalk", image: "/campaign/faith-tees-rack.png", badge: "new", sizes: ["S", "M", "L", "XL"], colors: ["Black", "Cream", "Army Green", "Maroon"] },
   { id: 2, name: "Pray Boldly Tee", category: "T-Shirts", collection: "Women", price: 25, message: "PRAY BOLDLY", scripture: "1 Thessalonians 5:17", tone: "ink", image: "/campaign/women-pray-boldly.png", badge: "top", sizes: ["S", "M", "L", "XL"], colors: ["Army Green", "Cream", "Black"] },
   { id: 3, name: "The Way Hoodie", category: "Hoodies", collection: "Men", price: 25, message: "THE WAY", scripture: "John 14:6", tone: "clay", image: "/campaign/men-the-way.png", badge: "new", sizes: ["S", "M", "L", "XL"], colors: ["Maroon", "Black", "Ash"] },
-  { id: 4, name: "Cord of Three Tee", category: "T-Shirts", collection: "Couple Connection", price: 25, message: "CORD OF THREE", scripture: "Ecclesiastes 4:12", tone: "paper", image: "/campaign/couple-connection.png", sizes: ["S", "M", "L", "XL"], colors: ["Cream", "Cocoa"] },
-  { id: 5, name: "Better Together Tee", category: "T-Shirts", collection: "Couple Connection", price: 25, message: "BETTER TOGETHER", scripture: "Ecclesiastes 4:12", tone: "mist", image: "/campaign/couple-connection.png", sizes: ["S", "M", "L", "XL"], colors: ["Cocoa", "Cream"] },
+  { id: 4, name: "Cord of Three Tee", category: "T-Shirts", collection: "Couples Collection", price: 25, message: "CORD OF THREE", scripture: "Ecclesiastes 4:12", tone: "paper", image: "/campaign/couple-connection.png", sizes: ["S", "M", "L", "XL"], colors: ["Cream", "Cocoa"] },
+  { id: 5, name: "Better Together Tee", category: "T-Shirts", collection: "Couples Collection", price: 25, message: "BETTER TOGETHER", scripture: "Ecclesiastes 4:12", tone: "mist", image: "/campaign/couple-connection.png", sizes: ["S", "M", "L", "XL"], colors: ["Cocoa", "Cream"] },
   { id: 6, name: "Grace for Today Mug", category: "Mugs", collection: "Gifts & Home", price: 10, message: "GRACE FOR TODAY", scripture: "Lamentations 3:23", tone: "stone", image: "/campaign/faith-accessories.png", sizes: ["12 oz"], colors: ["Cream", "White"] },
   { id: 7, name: "Let God Lead Tote", category: "Tote Bags", collection: "Gifts & Home", price: 12, message: "LET GOD LEAD", scripture: "Proverbs 3:6", tone: "gift", image: "/campaign/faith-accessories.png", badge: "top", sizes: ["One size"], colors: ["Black", "Natural"] },
   { id: 8, name: "Faith Everyday Cap", category: "Caps", collection: "Gifts & Home", price: 9, message: "FAITH", scripture: "Hebrews 11:1", tone: "linen", image: "/campaign/faith-accessories.png", sizes: ["Adjustable"], colors: ["Army Green", "Black"] },
@@ -36,11 +36,11 @@ const products: Product[] = [
 
 const heroSlides = [
   { kicker: "faith tees", title: <>Wear the word.<br />Live the message.</>, image: "/campaign/faith-tees-rack.png", className: "hero-slide--shopping" },
-  { kicker: "couple connection", title: <>Faith together.<br />Love connected.</>, image: "/campaign/couple-connection.png", className: "hero-slide--gifting" },
+  { kicker: "couples collection", title: <>Faith together.<br />Love connected.</>, image: "/campaign/couple-connection.png", className: "hero-slide--gifting" },
   { kicker: "gifts with meaning", title: <>Small reminders.<br />Lasting truth.</>, image: "/campaign/faith-accessories.png", className: "hero-slide--accessories" },
 ];
 
-const categories = ["All", "Couple Connection", "Women", "Men", "Faith Tees", "Gifts & Home"];
+const categories = ["All", "Couples Collection", "Women", "Men", "Faith Tees", "Gifts & Home"];
 const money = (value: number) => `$${value.toFixed(2)}`;
 
 function BrandLogo({ light = false }: { light?: boolean }) {
@@ -51,7 +51,6 @@ function ProductArtwork({ product }: { product: Product }) {
   return (
     <div className={`product-art product-art--${product.tone} product-art--photo`}>
       <img src={product.image} alt={`${product.name} product campaign`} />
-      <span className="product-art__caption"><b>{product.message}</b><small>{product.scripture}</small></span>
     </div>
   );
 }
@@ -148,14 +147,14 @@ export default function Home() {
       <header className={`mol-header ${scrolled ? "mol-header--scrolled" : ""}`}>
         <div className="mol-header__inner">
           <button className="mobile-menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu"><span /><span /><span /></button>
-          <a className="mol-header__logo" href="#home"><BrandLogo /></a>
+          <a className="mol-header__logo" href="/"><BrandLogo /></a>
           <nav className={`mol-nav ${menuOpen ? "mol-nav--open" : ""}`} aria-label="Main navigation">
-            <a href="#home" onClick={() => setMenuOpen(false)}>Home</a>
-            <a href="#collections" onClick={() => setMenuOpen(false)}>Collections</a>
-            <a href="#shop" onClick={() => setMenuOpen(false)}>Shop</a>
+            <a href="/" onClick={() => setMenuOpen(false)}>Home</a>
+            <a href="/men" onClick={() => setMenuOpen(false)}>Men</a>
+            <a href="/women" onClick={() => setMenuOpen(false)}>Women</a>
+            <a href="/couples" onClick={() => setMenuOpen(false)}>Couples</a>
+            <a href="/gifts-home" onClick={() => setMenuOpen(false)}>Gifts & Home</a>
             <a href="#custom" onClick={() => setMenuOpen(false)}>Custom print</a>
-            <a href="#journal" onClick={() => setMenuOpen(false)}>Journal</a>
-            <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
           </nav>
           <div className="mol-header__actions">
             <button aria-label="Search"><img src="/mollee/search.svg" alt="" /></button>
@@ -195,23 +194,20 @@ export default function Home() {
         <div className="collection-stats" data-reveal><strong>09<span>+</span></strong><small>Faith-filled collections<br />made for every season</small></div>
         <div className="collection-mosaic">
           <article className="collection-tile collection-tile--one" data-reveal>
-            <div className="collection-tile__image"><img src="/campaign/couple-connection.png" alt="Dreams Kulture Couple Connection collection" /></div>
-            <span className="collection-tile__giant">couples</span>
-            <div className="collection-tile__content"><span className="category-subtitle"><b>couple</b> connection</span><h2>Bound in faith.<br />Better together.</h2><a className="read-more" href="#shop">Shop the pair</a></div>
+            <div className="collection-tile__image"><img src="/campaign/couple-connection.png" alt="Dreams Kulture Couples Collection" /></div>
+            <div className="collection-tile__content"><span className="category-subtitle"><b>couples</b> collection</span><h2>Bound in faith.<br />Better together.</h2><a className="read-more" href="/couples">Shop the pair</a></div>
           </article>
           <article className="sale-tile" data-reveal>
             <img src="/campaign/faith-tees-rack.png" alt="Four Dreams Kulture faith T-shirts" />
-            <div className="sale-tile__border"><div><h2>four <strong>truths</strong></h2><p>Black, cream, army green and maroon—made to carry the message.</p><a className="read-more read-more--light" href="#shop">Shop faith tees</a></div></div>
+            <div className="sale-tile__copy"><h2>Four truths</h2><p>Black, cream, army green and maroon—made to carry the message.</p><a className="read-more" href="#shop">Shop faith tees</a></div>
           </article>
           <article className="collection-tile collection-tile--two" data-reveal>
             <div className="collection-tile__image"><img src="/campaign/women-pray-boldly.png" alt="Dreams Kulture women’s Pray Boldly T-shirt" /></div>
-            <span className="collection-tile__giant">women</span>
-            <div className="collection-tile__content"><span className="category-subtitle"><b>her</b> faith</span><h2>Soft strength.<br />Bold prayer.</h2><a className="read-more" href="#shop">Shop women</a></div>
+            <div className="collection-tile__content"><span className="category-subtitle"><b>her</b> faith</span><h2>Soft strength.<br />Bold prayer.</h2><a className="read-more" href="/women">Shop women</a></div>
           </article>
           <article className="collection-tile collection-tile--three" data-reveal>
             <div className="collection-tile__image"><img src="/campaign/faith-at-home.png" alt="Dreams Kulture faith-inspired home collection" /></div>
-            <span className="collection-tile__giant">home</span>
-            <div className="collection-tile__content"><span className="category-subtitle"><b>faith</b> at home</span><h2>Peace in<br />every room.</h2><a className="read-more" href="#shop">Explore home</a></div>
+            <div className="collection-tile__content"><span className="category-subtitle"><b>faith</b> at home</span><h2>Peace in<br />every room.</h2><a className="read-more" href="/gifts-home">Explore home</a></div>
           </article>
         </div>
         <div className="collection-stats collection-stats--right" data-reveal><strong>36<span>+</span></strong><small>States delivered<br />across Nigeria</small></div>
@@ -257,7 +253,7 @@ export default function Home() {
         <div className="custom-form-copy" data-reveal><span className="category-subtitle"><b>tell us</b> your idea</span><h2>Something made<br />just for you.</h2><p>Share the product, quantity, message and occasion. Our team will review the details and send a tailored quote.</p></div>
         <form className="mol-form" onSubmit={(event) => submitDemo(event, "Thank you—your custom request is in. Our team will reply with a quote within one business day.")} data-reveal>
           <div className="field-grid"><label>Full name<input required placeholder="Your name" /></label><label>Phone / WhatsApp<input required type="tel" placeholder="+234" /></label></div>
-          <div className="field-grid"><label>Product<select required defaultValue=""><option value="" disabled>Select a product</option><option>Shirts & T-shirts</option><option>Hoodies</option><option>Couple Connection</option><option>Mugs & coffee sets</option><option>Tote bags & caps</option><option>Journals & home gifts</option></select></label><label>Quantity<input type="number" min="1" defaultValue="1" required /></label></div>
+          <div className="field-grid"><label>Product<select required defaultValue=""><option value="" disabled>Select a product</option><option>Shirts & T-shirts</option><option>Hoodies</option><option>Couples Collection</option><option>Mugs & coffee sets</option><option>Tote bags & caps</option><option>Journals & home gifts</option></select></label><label>Quantity<input type="number" min="1" defaultValue="1" required /></label></div>
           <label>Email address<input required type="email" placeholder="you@example.com" /></label>
           <label>Describe the idea<textarea required rows={4} placeholder="Message, colours, sizes, event date and any details that matter…" /></label>
           <label className="file-field"><input type="file" accept="image/*,.pdf" /><span>＋</span><b>Add a logo or reference file</b><small>PNG, JPG or PDF · up to 10MB</small></label>
@@ -268,7 +264,7 @@ export default function Home() {
       <section className="journal page-wrap" id="journal">
         <div className="section-title" data-reveal><span className="category-subtitle">our <b>journal</b></span><h2>Stories behind the message</h2><p>Style, faith and thoughtful gifting—notes from the Dreams Kulture community.</p></div>
         <div className="journal-grid">
-          <article data-reveal><div className="journal-image"><img src="/campaign/couple-connection.png" alt="Dreams Kulture Couple Connection collection" /></div><div className="journal-card"><h3>Faith, friendship and the cord of three</h3><time>July 27, 2026</time><a className="read-more" href="#collections">Read story</a></div></article>
+          <article data-reveal><div className="journal-image"><img src="/campaign/couple-connection.png" alt="Dreams Kulture Couples Collection" /></div><div className="journal-card"><h3>Faith, friendship and the cord of three</h3><time>July 27, 2026</time><a className="read-more" href="/couples">Read story</a></div></article>
           <article data-reveal><div className="journal-image"><img src="/campaign/faith-at-home.png" alt="Dreams Kulture faith-inspired home collection" /></div><div className="journal-card"><h3>Creating a home filled with gentle reminders</h3><time>July 24, 2026</time><a className="read-more" href="#shop">Read story</a></div></article>
         </div>
       </section>
