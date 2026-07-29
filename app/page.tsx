@@ -1,39 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-
-type Product = {
-  id: number;
-  name: string;
-  category: string;
-  collection: string;
-  price: number;
-  oldPrice?: number;
-  message: string;
-  scripture: string;
-  tone: string;
-  image: string;
-  badge?: string;
-  sizes: string[];
-  colors: string[];
-};
+import { deliveryFee, money, products, type Product } from "@/app/_lib/storefront-products";
 
 type CartItem = Product & { size: string; color: string; quantity: number };
-
-const products: Product[] = [
-  { id: 1, name: "Walk by Faith Shirt", category: "Shirts", collection: "Faith Tees", price: 20, message: "WALK BY FAITH", scripture: "2 Corinthians 5:7", tone: "chalk", image: "/campaign/faith-tees-rack.png", badge: "new", sizes: ["S", "M", "L", "XL"], colors: ["Black", "Cream", "Army Green", "Maroon"] },
-  { id: 2, name: "Pray Boldly Tee", category: "T-Shirts", collection: "Women", price: 25, message: "PRAY BOLDLY", scripture: "1 Thessalonians 5:17", tone: "ink", image: "/campaign/women-pray-boldly.png", badge: "top", sizes: ["S", "M", "L", "XL"], colors: ["Army Green", "Cream", "Black"] },
-  { id: 3, name: "The Way Hoodie", category: "Hoodies", collection: "Men", price: 25, message: "THE WAY", scripture: "John 14:6", tone: "clay", image: "/campaign/men-the-way.png", badge: "new", sizes: ["S", "M", "L", "XL"], colors: ["Maroon", "Black", "Ash"] },
-  { id: 4, name: "Cord of Three Tee", category: "T-Shirts", collection: "Couples Collection", price: 25, message: "CORD OF THREE", scripture: "Ecclesiastes 4:12", tone: "paper", image: "/campaign/couple-connection.png", sizes: ["S", "M", "L", "XL"], colors: ["Cream", "Cocoa"] },
-  { id: 5, name: "Better Together Tee", category: "T-Shirts", collection: "Couples Collection", price: 25, message: "BETTER TOGETHER", scripture: "Ecclesiastes 4:12", tone: "mist", image: "/campaign/couple-connection.png", sizes: ["S", "M", "L", "XL"], colors: ["Cocoa", "Cream"] },
-  { id: 6, name: "Grace for Today Mug", category: "Mugs", collection: "Gifts & Home", price: 10, message: "GRACE FOR TODAY", scripture: "Lamentations 3:23", tone: "stone", image: "/campaign/faith-accessories.png", sizes: ["12 oz"], colors: ["Cream", "White"] },
-  { id: 7, name: "Let God Lead Tote", category: "Tote Bags", collection: "Gifts & Home", price: 12, message: "LET GOD LEAD", scripture: "Proverbs 3:6", tone: "gift", image: "/campaign/faith-accessories.png", badge: "top", sizes: ["One size"], colors: ["Black", "Natural"] },
-  { id: 8, name: "Faith Everyday Cap", category: "Caps", collection: "Gifts & Home", price: 9, message: "FAITH", scripture: "Hebrews 11:1", tone: "linen", image: "/campaign/faith-accessories.png", sizes: ["Adjustable"], colors: ["Army Green", "Black"] },
-  { id: 9, name: "Coffee & Grace Set", category: "Gift Sets", collection: "Gifts & Home", price: 30, message: "COFFEE & GRACE", scripture: "Psalm 90:14", tone: "stone", image: "/campaign/faith-accessories.png", badge: "sale", sizes: ["Gift set"], colors: ["Ivory & Sage"] },
-  { id: 10, name: "Peace, Be Still Cushion", category: "Home", collection: "Gifts & Home", price: 20, message: "PEACE, BE STILL", scripture: "Mark 4:39", tone: "paper", image: "/campaign/faith-at-home.png", sizes: ["18 × 18 in"], colors: ["Cream", "Sage"] },
-  { id: 11, name: "Write the Vision Journal", category: "Journals", collection: "Gifts & Home", price: 12, message: "WRITE THE VISION", scripture: "Habakkuk 2:2", tone: "clay", image: "/campaign/faith-at-home.png", sizes: ["A5"], colors: ["Maroon", "Cream"] },
-  { id: 12, name: "Grace Lives Here Frame", category: "Frames", collection: "Gifts & Home", price: 30, message: "GRACE LIVES HERE", scripture: "Joshua 24:15", tone: "paper", image: "/campaign/faith-at-home.png", sizes: ["8×10 in", "11×14 in", "16×20 in"], colors: ["Ivory", "Black"] },
-];
 
 const heroSlides = [
   { kicker: "faith tees", title: <>Wear the word.<br />Live the message.</>, image: "/campaign/faith-tees-rack.png", className: "hero-slide--shopping" },
@@ -43,7 +14,6 @@ const heroSlides = [
 
 const categories = ["All", "Couples Collection", "Women", "Men", "Faith Tees", "Gifts & Home"];
 const categoryStorageKey = "dreams-kulture-featured-category";
-const money = (value: number) => `$${value.toFixed(2)}`;
 
 function BrandLogo({ light = false }: { light?: boolean }) {
   return <img className={`dk-logo ${light ? "dk-logo--light" : ""}`} src="/dream-kulture-logo-transparent-cropped.png" alt="Dreams Kulture" />;
@@ -78,7 +48,11 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [heroIndex, setHeroIndex] = useState(0);
-  const [category, setCategory] = useState("All");
+  const [category, setCategory] = useState(() => {
+    if (typeof window === "undefined") return "All";
+    const storedCategory = window.localStorage.getItem(categoryStorageKey);
+    return storedCategory && categories.includes(storedCategory) ? storedCategory : "All";
+  });
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const [selected, setSelected] = useState<Product | null>(null);
   const [selectedSize, setSelectedSize] = useState("");
@@ -87,7 +61,8 @@ export default function Home() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [orderPlaced, setOrderPlaced] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
   const [formMessage, setFormMessage] = useState("");
 
   useEffect(() => {
@@ -100,11 +75,6 @@ export default function Home() {
   useEffect(() => {
     const timer = window.setInterval(() => setHeroIndex((index) => (index + 1) % heroSlides.length), 6500);
     return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const storedCategory = window.localStorage.getItem(categoryStorageKey);
-    if (storedCategory && categories.includes(storedCategory)) setCategory(storedCategory);
   }, []);
 
   useEffect(() => {
@@ -128,7 +98,7 @@ export default function Home() {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const delivery = subtotal >= 75 ? 0 : 8;
+  const delivery = deliveryFee(subtotal);
 
   const changeHero = (direction: number) => setHeroIndex((index) => (index + direction + heroSlides.length) % heroSlides.length);
   const openProduct = (product: Product) => {
@@ -154,15 +124,59 @@ export default function Home() {
     setFormMessage(message);
     event.currentTarget.reset();
   };
+  const submitCheckout = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setCheckoutError("");
+    setCheckoutLoading(true);
+
+    const formData = new FormData(event.currentTarget);
+    const customer = {
+      firstName: String(formData.get("firstName") ?? ""),
+      lastName: String(formData.get("lastName") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      phone: String(formData.get("phone") ?? ""),
+      country: String(formData.get("country") ?? ""),
+      address: String(formData.get("address") ?? ""),
+      city: String(formData.get("city") ?? ""),
+      state: String(formData.get("state") ?? ""),
+    };
+
+    try {
+      const response = await fetch("/api/checkout/paystack", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer,
+          items: cart.map((item) => ({
+            id: item.id,
+            size: item.size,
+            color: item.color,
+            quantity: item.quantity,
+          })),
+        }),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.authorizationUrl) {
+        throw new Error(result.message || "Unable to start Paystack checkout.");
+      }
+
+      window.localStorage.setItem("dreams-kulture-last-paystack-reference", result.reference);
+      window.location.href = result.authorizationUrl;
+    } catch (error) {
+      setCheckoutError(error instanceof Error ? error.message : "Unable to start Paystack checkout.");
+      setCheckoutLoading(false);
+    }
+  };
 
   return (
     <main className="mollee-site">
       <header className={`mol-header ${scrolled ? "mol-header--scrolled" : ""}`}>
         <div className="mol-header__inner">
           <button className="mobile-menu-button" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu"><span /><span /><span /></button>
-          <a className="mol-header__logo" href="/"><BrandLogo /></a>
+          <Link className="mol-header__logo" href="/"><BrandLogo /></Link>
           <nav className={`mol-nav ${menuOpen ? "mol-nav--open" : ""}`} aria-label="Main navigation">
-            <a href="/" onClick={() => setMenuOpen(false)}>Home</a>
+            <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
             <a href="/men" onClick={() => setMenuOpen(false)}>Men</a>
             <a href="/women" onClick={() => setMenuOpen(false)}>Women</a>
             <a href="/couples" onClick={() => setMenuOpen(false)}>Couples</a>
@@ -304,7 +318,7 @@ export default function Home() {
 
       {cartOpen && <div className="overlay overlay--cart" role="dialog" aria-modal="true" aria-label="Shopping bag"><button className="overlay__backdrop" onClick={() => setCartOpen(false)} aria-label="Close shopping bag" /><aside className="cart-panel"><header><div><span className="category-subtitle"><b>your</b> selection</span><h2>Shopping bag <small>({cartCount})</small></h2></div><button className="close-button" onClick={() => setCartOpen(false)} aria-label="Close">×</button></header>{cart.length === 0 ? <div className="cart-empty"><p>Your bag is waiting for something meaningful.</p><button className="mol-button" onClick={() => setCartOpen(false)}><span>Explore the shop</span></button></div> : <><div className="cart-items">{cart.map((item, index) => <article className="cart-item" key={`${item.id}-${item.size}-${item.color}`}><div className="cart-item__art"><span>{item.message}</span></div><div><h3>{item.name}</h3><p>{item.color} · {item.size}</p><strong>{money(item.price)}</strong><div className="cart-item__actions"><div className="quantity quantity--small"><button onClick={() => changeQuantity(index, -1)}>−</button><span>{item.quantity}</span><button onClick={() => changeQuantity(index, 1)}>＋</button></div><button onClick={() => setCart((current) => current.filter((_, itemIndex) => itemIndex !== index))}>Remove</button></div></div></article>)}</div><div className="cart-summary"><div><span>Subtotal</span><strong>{money(subtotal)}</strong></div><div><span>Estimated delivery</span><strong>{delivery === 0 ? "Free" : money(delivery)}</strong></div><div className="cart-total"><span>Total</span><strong>{money(subtotal + delivery)}</strong></div><p>Taxes and international shipping are calculated at checkout.</p><button className="mol-button" onClick={() => { setCartOpen(false); setCheckoutOpen(true); }}><span>Proceed to checkout</span></button></div></>}</aside></div>}
 
-      {checkoutOpen && <div className="overlay" role="dialog" aria-modal="true" aria-label="Checkout"><button className="overlay__backdrop" onClick={() => setCheckoutOpen(false)} aria-label="Close checkout" /><div className="checkout-modal"><button className="close-button" onClick={() => setCheckoutOpen(false)}>×</button>{orderPlaced ? <div className="order-success"><span>✓</span><p className="category-subtitle"><b>order</b> received</p><h2>Thank you for<br />choosing meaning.</h2><p>Your confirmation number is <b>DK-260727</b>. We have sent the next steps to your email.</p><button className="mol-button" onClick={() => { setCheckoutOpen(false); setOrderPlaced(false); setCart([]); }}><span>Continue shopping</span></button></div> : <><div className="checkout-head"><span className="category-subtitle"><b>secure</b> checkout</span><h2>Delivery details</h2><p>Guest checkout · Cards and bank transfer accepted</p></div><form className="checkout-form" onSubmit={(event) => { event.preventDefault(); setOrderPlaced(true); }}><div className="field-grid"><label>First name<input required /></label><label>Last name<input required /></label></div><label>Email<input required type="email" /></label><label>Phone number<input required type="tel" /></label><label>Country<select required defaultValue="Nigeria"><option>Nigeria</option><option>Ghana</option><option>United Kingdom</option><option>United States</option><option>Canada</option><option>Other international</option></select></label><label>Delivery address<input required placeholder="Street address" /></label><div className="field-grid"><label>City<input required /></label><label>State / region<input required /></label></div><div className="checkout-total"><span>Order total</span><strong>{money(subtotal + delivery)}</strong></div><label className="terms"><input type="checkbox" required /> I agree to the store terms, shipping and return policy.</label><button className="mol-button" type="submit"><span>Place demo order securely</span></button><small>This preview does not collect or charge payment details.</small></form></>}</div></div>}
+      {checkoutOpen && <div className="overlay" role="dialog" aria-modal="true" aria-label="Checkout"><button className="overlay__backdrop" onClick={() => !checkoutLoading && setCheckoutOpen(false)} aria-label="Close checkout" /><div className="checkout-modal"><button className="close-button" onClick={() => setCheckoutOpen(false)} disabled={checkoutLoading}>×</button><div className="checkout-head"><span className="category-subtitle"><b>paystack</b> checkout</span><h2>Delivery details</h2><p>Guest checkout · Cards, bank transfer and USSD through Paystack.</p></div><form className="checkout-form" onSubmit={submitCheckout}><div className="field-grid"><label>First name<input name="firstName" required /></label><label>Last name<input name="lastName" required /></label></div><label>Email<input name="email" required type="email" /></label><label>Phone number<input name="phone" required type="tel" placeholder="+234" /></label><label>Country<select name="country" required defaultValue="Nigeria"><option>Nigeria</option><option>Ghana</option><option>United Kingdom</option><option>United States</option><option>Canada</option><option>Other international</option></select></label><label>Delivery address<input name="address" required placeholder="Street address" /></label><div className="field-grid"><label>City<input name="city" required /></label><label>State / region<input name="state" required /></label></div><div className="checkout-total"><span>Order total</span><strong>{money(subtotal + delivery)}</strong></div><label className="terms"><input type="checkbox" required /> I agree to the store terms, shipping and return policy.</label>{checkoutError && <p className="checkout-error" role="alert">{checkoutError}</p>}<button className="mol-button" type="submit" disabled={checkoutLoading || cart.length === 0}><span>{checkoutLoading ? "Connecting to Paystack…" : "Pay securely with Paystack"}</span></button><small>Your order is only confirmed after Paystack verifies the payment.</small></form></div></div>}
 
       {formMessage && <div className="toast" role="status"><p>{formMessage}</p><button onClick={() => setFormMessage("")} aria-label="Dismiss message">×</button></div>}
       <a className="whatsapp-float" href="https://wa.me/2348104268019" target="_blank" rel="noreferrer" aria-label="Shop with Dreams Kulture on WhatsApp"><span>◉</span><b>WhatsApp</b></a>

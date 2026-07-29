@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { StoreProduct } from "../_lib/catalog";
+import { money } from "../_lib/storefront-products";
 import type { CollectionConfig } from "./CollectionPage";
 
 const collectionLinks = [
@@ -14,7 +15,7 @@ const collectionLinks = [
 ];
 
 export default function ShopCollectionClient({ config, products }: { config: CollectionConfig; products: StoreProduct[] }) {
-  const ceiling = Math.max(40, ...products.map((product) => Number(product.price)));
+  const ceiling = Math.max(40000, ...products.map((product) => Number(product.price)));
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState("featured");
   const [maxPrice, setMaxPrice] = useState(ceiling);
@@ -70,7 +71,7 @@ export default function ShopCollectionClient({ config, products }: { config: Col
           <div className="shop-filter">
             <h2>Price</h2>
             <input className="price-range" type="range" min="0" max={ceiling} value={maxPrice} onChange={(event) => setMaxPrice(Number(event.target.value))} />
-            <p>$0.00 — ${maxPrice.toFixed(2)}</p>
+            <p>{money(0)} — {money(maxPrice)}</p>
           </div>
 
           <div className="shop-filter">
@@ -84,7 +85,7 @@ export default function ShopCollectionClient({ config, products }: { config: Col
 
           {products.length > 0 && <div className="reviewed-products">
             <h2>Reviewed by you</h2>
-            {products.slice(0, 3).map((product) => <article key={product.id}><img src={product.image_urls[0]} alt="" /><div><h3>{product.name}</h3><strong>${Number(product.price).toFixed(2)}</strong></div></article>)}
+            {products.slice(0, 3).map((product) => <article key={product.id}><img src={product.image_urls[0]} alt="" /><div><h3>{product.name}</h3><strong>{money(Number(product.price))}</strong></div></article>)}
           </div>}
         </aside>
 
@@ -113,7 +114,7 @@ export default function ShopCollectionClient({ config, products }: { config: Col
                 <small>{product.product_type.replace("-", " ")}</small>
                 <h3>{product.name}</h3>
                 <div className="shop-product-card__bottom">
-                  <strong>${Number(product.price).toFixed(2)}</strong>
+                  <strong>{money(Number(product.price))}</strong>
                   <span>{(product.frame_size_options.length ? product.frame_size_options : product.size_options).slice(0, 4).join(" · ")}</span>
                 </div>
               </article>

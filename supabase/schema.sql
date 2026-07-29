@@ -57,7 +57,7 @@ create table if not exists public.products (
   scripture text,
   product_type text not null,
   status public.product_status not null default 'draft',
-  currency char(3) not null default 'USD',
+  currency char(3) not null default 'NGN',
   price numeric(12,2) not null check (price >= 0),
   compare_at_price numeric(12,2) check (compare_at_price is null or compare_at_price >= price),
   cost_price numeric(12,2) check (cost_price is null or cost_price >= 0),
@@ -116,7 +116,7 @@ create table if not exists public.addresses (
 create table if not exists public.carts (
   id uuid primary key default gen_random_uuid(),
   customer_id uuid not null references auth.users(id) on delete cascade,
-  currency char(3) not null default 'USD',
+  currency char(3) not null default 'NGN',
   status text not null default 'active' check (status in ('active', 'converted', 'abandoned')),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -158,7 +158,7 @@ create table if not exists public.orders (
   customer_phone text not null,
   status public.order_status not null default 'pending',
   fulfilment_status public.fulfilment_status not null default 'unfulfilled',
-  currency char(3) not null default 'USD',
+  currency char(3) not null default 'NGN',
   subtotal numeric(12,2) not null default 0,
   discount_total numeric(12,2) not null default 0,
   shipping_total numeric(12,2) not null default 0,
@@ -200,7 +200,7 @@ create table if not exists public.payments (
   provider_reference text,
   status public.payment_status not null default 'pending',
   amount numeric(12,2) not null check (amount >= 0),
-  currency char(3) not null default 'USD',
+  currency char(3) not null default 'NGN',
   payment_method text,
   paid_at timestamptz,
   metadata jsonb not null default '{}'::jsonb,
@@ -250,7 +250,7 @@ create table if not exists public.custom_requests (
   reference_urls text[] not null default '{}',
   status text not null default 'new' check (status in ('new', 'reviewing', 'quoted', 'approved', 'in_production', 'completed', 'cancelled')),
   quoted_amount numeric(12,2),
-  currency char(3) not null default 'USD',
+  currency char(3) not null default 'NGN',
   seller_notes text,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
@@ -292,6 +292,7 @@ create index if not exists order_items_order_id_idx on public.order_items(order_
 create index if not exists order_items_product_id_idx on public.order_items(product_id);
 create index if not exists order_items_variant_id_idx on public.order_items(variant_id);
 create index if not exists payments_order_id_idx on public.payments(order_id);
+create unique index if not exists payments_provider_reference_unique_idx on public.payments(provider, provider_reference) where provider_reference is not null;
 create index if not exists shipments_order_id_idx on public.shipments(order_id);
 create index if not exists reviews_product_id_idx on public.reviews(product_id);
 create index if not exists reviews_customer_id_idx on public.reviews(customer_id);
@@ -425,21 +426,21 @@ on conflict (slug) do update set
 
 insert into public.products (
   category_id, name, slug, short_description, description, scripture, product_type,
-  status, price, sku_prefix, featured, image_urls, tags, size_options, color_options,
+  status, currency, price, sku_prefix, featured, image_urls, tags, size_options, color_options,
   frame_size_options, care_instructions, metadata
 ) values
-  ((select id from public.categories where slug='faith-tees'), 'Walk by Faith Shirt', 'walk-by-faith-shirt', 'A premium faith shirt for everyday wear.', 'Heavyweight cotton with a relaxed unisex fit.', '2 Corinthians 5:7', 'shirt', 'active', 20, 'DK-WBF', true, array['/campaign/faith-tees-rack.png'], array['faith','unisex','shirt'], array['XS','S','M','L','XL','2XL','3XL'], array['Black','Cream','Army Green','Maroon'], '{}', array['Wash cold','Do not iron directly on print'], '{"message":"WALK BY FAITH"}'),
-  ((select id from public.categories where slug='women'), 'Pray Boldly Tee', 'pray-boldly-tee', 'Soft strength and bold prayer.', 'Premium oversized tee with a contemporary editorial print.', '1 Thessalonians 5:17', 't-shirt', 'active', 25, 'DK-PBT', true, array['/campaign/women-pray-boldly.png'], array['faith','women','tee'], array['XS','S','M','L','XL','2XL'], array['Army Green','Cream','Black'], '{}', array['Wash cold','Line dry'], '{"message":"PRAY BOLDLY"}'),
-  ((select id from public.categories where slug='men'), 'The Way Hoodie', 'the-way-hoodie', 'A heavyweight statement layer.', 'Premium maroon sweatshirt-style hoodie with a clean faith message.', 'John 14:6', 'hoodie', 'active', 25, 'DK-TWH', true, array['/campaign/men-the-way.png'], array['faith','men','hoodie'], array['S','M','L','XL','2XL','3XL'], array['Maroon','Black','Ash'], '{}', array['Wash cold','Dry flat'], '{"message":"THE WAY"}'),
-  ((select id from public.categories where slug='couples-collection'), 'Cord of Three Tee', 'cord-of-three-tee', 'Faith at the centre of love.', 'Coordinating premium couple tee in a relaxed fit.', 'Ecclesiastes 4:12', 't-shirt', 'active', 25, 'DK-COT', true, array['/campaign/couple-connection.png'], array['faith','couples','tee'], array['XS','S','M','L','XL','2XL','3XL'], array['Cream','Cocoa'], '{}', array['Wash cold','Line dry'], '{"message":"CORD OF THREE"}'),
-  ((select id from public.categories where slug='couples-collection'), 'Better Together Tee', 'better-together-tee', 'Designed for faith and love together.', 'Coordinating premium couple tee in a relaxed fit.', 'Ecclesiastes 4:12', 't-shirt', 'active', 25, 'DK-BTT', true, array['/campaign/couple-connection.png'], array['faith','couples','tee'], array['XS','S','M','L','XL','2XL','3XL'], array['Cocoa','Cream'], '{}', array['Wash cold','Line dry'], '{"message":"BETTER TOGETHER"}'),
-  ((select id from public.categories where slug='gifts-home'), 'Grace for Today Mug', 'grace-for-today-mug', 'A daily reminder with every cup.', 'Durable ceramic mug for coffee, tea and quiet time.', 'Lamentations 3:23', 'mug', 'active', 10, 'DK-GTM', false, array['/campaign/faith-accessories.png'], array['faith','mug','gift'], array['12 oz'], array['Cream','White'], '{}', array['Dishwasher safe'], '{"message":"GRACE FOR TODAY"}'),
-  ((select id from public.categories where slug='gifts-home'), 'Let God Lead Tote', 'let-god-lead-tote', 'Carry the reminder everywhere.', 'Strong everyday cotton tote with comfortable handles.', 'Proverbs 3:6', 'tote-bag', 'active', 12, 'DK-LGL', true, array['/campaign/faith-accessories.png'], array['faith','bag','gift'], array['One Size'], array['Black','Natural'], '{}', array['Spot clean'], '{"message":"LET GOD LEAD","default_size":true}'),
-  ((select id from public.categories where slug='gifts-home'), 'Faith Everyday Cap', 'faith-everyday-cap', 'A simple embroidered declaration.', 'Adjustable cotton cap with clean faith embroidery.', 'Hebrews 11:1', 'cap', 'active', 9, 'DK-FEC', false, array['/campaign/faith-accessories.png'], array['faith','cap','gift'], array['Adjustable'], array['Army Green','Black'], '{}', array['Spot clean'], '{"message":"FAITH"}'),
-  ((select id from public.categories where slug='gifts-home'), 'Coffee & Grace Set', 'coffee-grace-set', 'A thoughtful coffee-time gift set.', 'Coordinated mug and devotional gift set, ready to give.', 'Psalm 90:14', 'gift-set', 'active', 30, 'DK-CGS', true, array['/campaign/faith-accessories.png'], array['faith','coffee','gift-set'], array['Gift Set'], array['Ivory & Sage'], '{}', array['See individual items'], '{"message":"COFFEE & GRACE"}'),
-  ((select id from public.categories where slug='gifts-home'), 'Peace, Be Still Cushion', 'peace-be-still-cushion', 'A gentle reminder for restful spaces.', 'Soft decorative cushion cover for faith-filled interiors.', 'Mark 4:39', 'cushion', 'active', 20, 'DK-PBS', false, array['/campaign/faith-at-home.png'], array['faith','home','cushion'], array['18 × 18 in'], array['Cream','Sage'], '{}', array['Cold gentle wash'], '{"message":"PEACE, BE STILL"}'),
-  ((select id from public.categories where slug='gifts-home'), 'Write the Vision Journal', 'write-the-vision-journal', 'A place for prayer, plans and reflection.', 'A5 spiral journal with lined pages and durable cover.', 'Habakkuk 2:2', 'journal', 'active', 12, 'DK-WTV', false, array['/campaign/faith-at-home.png'], array['faith','journal','gift'], array['A5'], array['Maroon','Cream'], '{}', '{}', '{"message":"WRITE THE VISION"}'),
-  ((select id from public.categories where slug='gifts-home'), 'Grace Lives Here Frame', 'grace-lives-here-frame', 'Faith-centred wall art for modern homes.', 'Premium art print available in standard frame and paper sizes.', null, 'frame', 'active', 30, 'DK-GLH', false, array['/campaign/faith-at-home.png'], array['faith','home','frame'], '{}', array['Ivory','Black'], array['8×10 in','11×14 in','12×16 in','16×20 in','18×24 in','24×36 in','A4','A3','A2'], array['Wipe frame with a dry cloth'], '{"message":"GRACE LIVES HERE"}')
+  ((select id from public.categories where slug='faith-tees'), 'Walk by Faith Shirt', 'walk-by-faith-shirt', 'A premium faith shirt for everyday wear.', 'Heavyweight cotton with a relaxed unisex fit.', '2 Corinthians 5:7', 'shirt', 'active', 'NGN', 20000, 'DK-WBF', true, array['/campaign/faith-tees-rack.png'], array['faith','unisex','shirt'], array['XS','S','M','L','XL','2XL','3XL'], array['Black','Cream','Army Green','Maroon'], '{}', array['Wash cold','Do not iron directly on print'], '{"message":"WALK BY FAITH"}'),
+  ((select id from public.categories where slug='women'), 'Pray Boldly Tee', 'pray-boldly-tee', 'Soft strength and bold prayer.', 'Premium oversized tee with a contemporary editorial print.', '1 Thessalonians 5:17', 't-shirt', 'active', 'NGN', 25000, 'DK-PBT', true, array['/campaign/women-pray-boldly.png'], array['faith','women','tee'], array['XS','S','M','L','XL','2XL'], array['Army Green','Cream','Black'], '{}', array['Wash cold','Line dry'], '{"message":"PRAY BOLDLY"}'),
+  ((select id from public.categories where slug='men'), 'The Way Hoodie', 'the-way-hoodie', 'A heavyweight statement layer.', 'Premium maroon sweatshirt-style hoodie with a clean faith message.', 'John 14:6', 'hoodie', 'active', 'NGN', 25000, 'DK-TWH', true, array['/campaign/men-the-way.png'], array['faith','men','hoodie'], array['S','M','L','XL','2XL','3XL'], array['Maroon','Black','Ash'], '{}', array['Wash cold','Dry flat'], '{"message":"THE WAY"}'),
+  ((select id from public.categories where slug='couples-collection'), 'Cord of Three Tee', 'cord-of-three-tee', 'Faith at the centre of love.', 'Coordinating premium couple tee in a relaxed fit.', 'Ecclesiastes 4:12', 't-shirt', 'active', 'NGN', 25000, 'DK-COT', true, array['/campaign/couple-connection.png'], array['faith','couples','tee'], array['XS','S','M','L','XL','2XL','3XL'], array['Cream','Cocoa'], '{}', array['Wash cold','Line dry'], '{"message":"CORD OF THREE"}'),
+  ((select id from public.categories where slug='couples-collection'), 'Better Together Tee', 'better-together-tee', 'Designed for faith and love together.', 'Coordinating premium couple tee in a relaxed fit.', 'Ecclesiastes 4:12', 't-shirt', 'active', 'NGN', 25000, 'DK-BTT', true, array['/campaign/couple-connection.png'], array['faith','couples','tee'], array['XS','S','M','L','XL','2XL','3XL'], array['Cocoa','Cream'], '{}', array['Wash cold','Line dry'], '{"message":"BETTER TOGETHER"}'),
+  ((select id from public.categories where slug='gifts-home'), 'Grace for Today Mug', 'grace-for-today-mug', 'A daily reminder with every cup.', 'Durable ceramic mug for coffee, tea and quiet time.', 'Lamentations 3:23', 'mug', 'active', 'NGN', 10000, 'DK-GTM', false, array['/campaign/faith-accessories.png'], array['faith','mug','gift'], array['12 oz'], array['Cream','White'], '{}', array['Dishwasher safe'], '{"message":"GRACE FOR TODAY"}'),
+  ((select id from public.categories where slug='gifts-home'), 'Let God Lead Tote', 'let-god-lead-tote', 'Carry the reminder everywhere.', 'Strong everyday cotton tote with comfortable handles.', 'Proverbs 3:6', 'tote-bag', 'active', 'NGN', 12000, 'DK-LGL', true, array['/campaign/faith-accessories.png'], array['faith','bag','gift'], array['One Size'], array['Black','Natural'], '{}', array['Spot clean'], '{"message":"LET GOD LEAD","default_size":true}'),
+  ((select id from public.categories where slug='gifts-home'), 'Faith Everyday Cap', 'faith-everyday-cap', 'A simple embroidered declaration.', 'Adjustable cotton cap with clean faith embroidery.', 'Hebrews 11:1', 'cap', 'active', 'NGN', 9000, 'DK-FEC', false, array['/campaign/faith-accessories.png'], array['faith','cap','gift'], array['Adjustable'], array['Army Green','Black'], '{}', array['Spot clean'], '{"message":"FAITH"}'),
+  ((select id from public.categories where slug='gifts-home'), 'Coffee & Grace Set', 'coffee-grace-set', 'A thoughtful coffee-time gift set.', 'Coordinated mug and devotional gift set, ready to give.', 'Psalm 90:14', 'gift-set', 'active', 'NGN', 30000, 'DK-CGS', true, array['/campaign/faith-accessories.png'], array['faith','coffee','gift-set'], array['Gift Set'], array['Ivory & Sage'], '{}', array['See individual items'], '{"message":"COFFEE & GRACE"}'),
+  ((select id from public.categories where slug='gifts-home'), 'Peace, Be Still Cushion', 'peace-be-still-cushion', 'A gentle reminder for restful spaces.', 'Soft decorative cushion cover for faith-filled interiors.', 'Mark 4:39', 'cushion', 'active', 'NGN', 20000, 'DK-PBS', false, array['/campaign/faith-at-home.png'], array['faith','home','cushion'], array['18 × 18 in'], array['Cream','Sage'], '{}', array['Cold gentle wash'], '{"message":"PEACE, BE STILL"}'),
+  ((select id from public.categories where slug='gifts-home'), 'Write the Vision Journal', 'write-the-vision-journal', 'A place for prayer, plans and reflection.', 'A5 spiral journal with lined pages and durable cover.', 'Habakkuk 2:2', 'journal', 'active', 'NGN', 12000, 'DK-WTV', false, array['/campaign/faith-at-home.png'], array['faith','journal','gift'], array['A5'], array['Maroon','Cream'], '{}', '{}', '{"message":"WRITE THE VISION"}'),
+  ((select id from public.categories where slug='gifts-home'), 'Grace Lives Here Frame', 'grace-lives-here-frame', 'Faith-centred wall art for modern homes.', 'Premium art print available in standard frame and paper sizes.', null, 'frame', 'active', 'NGN', 30000, 'DK-GLH', false, array['/campaign/faith-at-home.png'], array['faith','home','frame'], '{}', array['Ivory','Black'], array['8×10 in','11×14 in','12×16 in','16×20 in','18×24 in','24×36 in','A4','A3','A2'], array['Wipe frame with a dry cloth'], '{"message":"GRACE LIVES HERE"}')
 on conflict (slug) do update set
   category_id = excluded.category_id,
   name = excluded.name,
@@ -448,6 +449,7 @@ on conflict (slug) do update set
   scripture = excluded.scripture,
   product_type = excluded.product_type,
   status = excluded.status,
+  currency = excluded.currency,
   price = excluded.price,
   sku_prefix = excluded.sku_prefix,
   featured = excluded.featured,
