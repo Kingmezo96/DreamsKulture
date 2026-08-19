@@ -15,8 +15,8 @@ export type StoreProduct = {
 };
 
 const fallbackProducts: StoreProduct[] = [
-  ["1", "Walk by Faith Shirt", "walk-by-faith-shirt", "A premium faith shirt for everyday wear.", "2 Corinthians 5:7", "shirt", 20000, "/campaign/faith-tees-rack.png", ["XS", "S", "M", "L", "XL", "2XL", "3XL"], ["Black", "Cream", "Army Green", "Maroon"], "faith-tees", "Faith Tees"],
-  ["2", "Pray Boldly Tee", "pray-boldly-tee", "Soft strength and bold prayer.", "1 Thessalonians 5:17", "t-shirt", 25000, "/campaign/women-pray-boldly.png", ["XS", "S", "M", "L", "XL", "2XL"], ["Army Green", "Cream", "Black"], "women", "Women"],
+  ["1", "Walk by Faith Shirt", "walk-by-faith-shirt", "A premium faith shirt for everyday wear.", "2 Corinthians 5:7", "shirt", 20000, "/campaign/faith-tees-rack.png", ["XS", "S", "M", "L", "XL", "2XL", "3XL"], ["White", "Black", "Red", "Blue", "Yellow"], "faith-tees", "Faith Tees"],
+  ["2", "Pray Boldly Tee", "pray-boldly-tee", "Soft strength and bold prayer.", "1 Thessalonians 5:17", "t-shirt", 25000, "/campaign/women-pray-boldly.png", ["XS", "S", "M", "L", "XL", "2XL"], ["White", "Black", "Red", "Blue", "Yellow"], "women", "Women"],
   ["3", "The Way Hoodie", "the-way-hoodie", "A heavyweight statement layer.", "John 14:6", "hoodie", 25000, "/campaign/men-the-way.png", ["S", "M", "L", "XL", "2XL", "3XL"], ["Maroon", "Black", "Ash"], "men", "Men"],
   ["4", "Cord of Three Tee", "cord-of-three-tee", "Faith at the centre of love.", "Ecclesiastes 4:12", "t-shirt", 25000, "/campaign/couple-connection.png", ["XS", "S", "M", "L", "XL", "2XL", "3XL"], ["Cream", "Cocoa"], "couples-collection", "Couples Collection"],
   ["5", "Better Together Tee", "better-together-tee", "Designed for faith and love together.", "Ecclesiastes 4:12", "t-shirt", 25000, "/campaign/couple-connection.png", ["XS", "S", "M", "L", "XL", "2XL", "3XL"], ["Cocoa", "Cream"], "couples-collection", "Couples Collection"],
