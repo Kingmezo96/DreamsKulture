@@ -8,11 +8,11 @@ type CartItem = Product & { size: string; color: string; quantity: number };
 
 const heroSlides = [
   { kicker: "new shirts", title: <>Live by<br />faith.</>, image: "/campaign/faith-tees-rack.png", className: "hero-slide--shopping" },
-  { kicker: "sweatshirts", title: <>Not forsaken.<br />Always carried.</>, image: "/campaign/men-the-way.png", className: "hero-slide--gifting" },
+  { kicker: "hoodies", title: <>Not forsaken.<br />Always carried.</>, image: "/campaign/not-forsaken-hoodie.png", className: "hero-slide--gifting" },
   { kicker: "gifts with meaning", title: <>Caps, mugs,<br />totes & journals.</>, image: "/campaign/faith-accessories.png", className: "hero-slide--accessories" },
 ];
 
-const categories = ["All", "Shirts", "Sweatshirts", "Couples", "Gift & Homes"];
+const categories = ["All", "Shirts", "Hoodies", "Sweatshirts", "Couples", "Gift & Homes"];
 const categoryStorageKey = "dreams-kulture-featured-category";
 
 function BrandLogo({ light = false }: { light?: boolean }) {
@@ -211,33 +211,8 @@ export default function Home() {
         <aside className="mol-hero__right">
           <div className="hero-dots">{heroSlides.map((slide, index) => <button key={slide.kicker} className={heroIndex === index ? "active" : ""} onClick={() => setHeroIndex(index)} aria-label={`Show slide ${index + 1}`}><span /></button>)}</div>
           <div className="hero-arrows"><button onClick={() => changeHero(-1)} aria-label="Previous slide">←</button><button onClick={() => changeHero(1)} aria-label="Next slide">→</button></div>
-          <a className="scroll-down" href="#collections"><span>Scroll down</span><i /></a>
+          <a className="scroll-down" href="#shop"><span>Scroll down</span><i /></a>
         </aside>
-      </section>
-
-      <section className="collection-section page-wrap" id="collections">
-        <img className="collection-section__dots collection-section__dots--left" src="/mollee/vector-collections.svg" alt="" />
-        <div className="collection-stats" data-reveal><strong>06<span></span></strong><small>Core shop categories<br />for this first drop</small></div>
-        <div className="collection-mosaic">
-          <article className="collection-tile collection-tile--one" data-reveal>
-            <div className="collection-tile__image"><img src="/campaign/women-pray-boldly.png" alt="Dreams Kulture Just a Girl Faith shirt" /></div>
-            <div className="collection-tile__content"><span className="category-subtitle"><b>shirts</b> collection</span><h2>Decided to<br />live by faith.</h2><a className="read-more" href="/shirts">Shop shirts</a></div>
-          </article>
-          <article className="sale-tile" data-reveal>
-            <img src="/campaign/men-the-way.png" alt="Dreams Kulture Be the Light sweatshirt" />
-            <div className="sale-tile__copy"><h2>Six sweatshirts</h2><p>Not Forsaken, God’s Masterpiece, Be the Light, Walk by Faith, Be Salty Stay Lit and Let God Carry It.</p><a className="read-more" href="/sweatshirts">Shop sweatshirts</a></div>
-          </article>
-          <article className="collection-tile collection-tile--two" data-reveal>
-            <div className="collection-tile__image"><img src="/dream-kulture-brand-wall.jpg" alt="Dreams Kulture cap and accessories styling" /></div>
-            <div className="collection-tile__content"><span className="category-subtitle"><b>caps</b> & daily pieces</span><h2>Simple faith.<br />Everyday wear.</h2><a className="read-more" href="/caps">Shop caps</a></div>
-          </article>
-          <article className="collection-tile collection-tile--three" data-reveal>
-            <div className="collection-tile__image"><img src="/campaign/faith-at-home.png" alt="Dreams Kulture faith-inspired home collection" /></div>
-            <div className="collection-tile__content"><span className="category-subtitle"><b>journals</b> & gifts</span><h2>Write the<br />vision.</h2><a className="read-more" href="/journals">Shop journals</a></div>
-          </article>
-        </div>
-        <div className="collection-stats collection-stats--right" data-reveal><strong>36<span>+</span></strong><small>States delivered<br />across Nigeria</small></div>
-        <a className="mol-button collection-cta" href="/shop"><span>View shop</span></a>
       </section>
 
       <section className="catalog-section page-wrap" id="shop">
@@ -279,7 +254,7 @@ export default function Home() {
         <div className="custom-form-copy" data-reveal><span className="category-subtitle"><b>tell us</b> your idea</span><h2>Something made<br />just for you.</h2><p>Share the product, quantity, message and occasion. Our team will review the details and send a tailored quote.</p></div>
         <form className="mol-form" onSubmit={(event) => submitDemo(event, "Thank you—your custom request is in. Our team will reply with a quote within one business day.")} data-reveal>
           <div className="field-grid"><label>Full name<input required placeholder="Your name" /></label><label>Phone / WhatsApp<input required type="tel" placeholder="+234" /></label></div>
-          <div className="field-grid"><label>Product<select required defaultValue=""><option value="" disabled>Select a product</option><option>Shirts</option><option>Sweatshirts</option><option>Couples</option><option>Mugs</option><option>Throw pillows</option></select></label><label>Quantity<input type="number" min="1" defaultValue="1" required /></label></div>
+          <div className="field-grid"><label>Product<select required defaultValue=""><option value="" disabled>Select a product</option><option>Shirts</option><option>Hoodies</option><option>Sweatshirts</option><option>Couples</option><option>Mugs</option><option>Throw pillows</option></select></label><label>Quantity<input type="number" min="1" defaultValue="1" required /></label></div>
           <label>Email address<input required type="email" placeholder="you@example.com" /></label>
           <label>Describe the idea<textarea required rows={4} placeholder="Message, colours, sizes, event date and any details that matter…" /></label>
           <label className="file-field"><input type="file" accept="image/*,.pdf" /><span>＋</span><b>Add a logo or reference file</b><small>PNG, JPG or PDF · up to 10MB</small></label>
@@ -307,7 +282,7 @@ export default function Home() {
         <img className="footer-dots footer-dots--right" src="/mollee/vector-footer-right.svg" alt="" />
         <div className="mol-footer__top page-wrap">
           <div className="footer-brand"><BrandLogo /><p>Faith-inspired apparel, prints and gifts—designed in Nigeria, delivered worldwide.</p><div className="footer-socials"><a href="#">FB</a><a href="#">X</a><a href="https://www.instagram.com/dreamskulture_/" target="_blank" rel="noreferrer" aria-label="Dreams Kulture on Instagram">INS</a><a href="#">PIN</a></div></div>
-          <div className="footer-links"><div><h3>About</h3><a href="#collections">Drop</a><a href="#shop">Shop</a><a href="#journal">Journal</a><a href="#contact">Contact us</a></div><div><h3>Useful links</h3><a href="#">Privacy policy</a><a href="#">Terms of use</a><a href="#">Shipping details</a><a href="#">FAQs</a></div></div>
+          <div className="footer-links"><div><h3>About</h3><a href="#shop">Drop</a><a href="#shop">Shop</a><a href="#journal">Journal</a><a href="#contact">Contact us</a></div><div><h3>Useful links</h3><a href="#">Privacy policy</a><a href="#">Terms of use</a><a href="#">Shipping details</a><a href="#">FAQs</a></div></div>
           <div className="footer-contact"><h3>Visit & contact</h3><p>Lagos, Nigeria<br />Mon–Sat, 9am–6pm</p><a href="mailto:hello@dreamskulture.com">hello@dreamskulture.com</a><a href="https://wa.me/2348104268019" target="_blank" rel="noreferrer">+234 810 426 8019 · WhatsApp</a><a href="https://www.instagram.com/dreamskulture_/" target="_blank" rel="noreferrer">@dreamskulture_ · Instagram</a></div>
         </div>
         <div className="mol-footer__bottom page-wrap"><span>© 2026 Dreams Kulture</span><span>Designed with faith + intention</span></div>

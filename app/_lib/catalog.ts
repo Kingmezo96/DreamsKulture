@@ -18,6 +18,7 @@ export type StoreProduct = {
 
 const shopCategorySlugs: Record<string, string> = {
   Shirts: "shirts",
+  Hoodies: "hoodies",
   Sweatshirts: "sweatshirts",
   Couples: "couples",
   Caps: "caps",
@@ -29,6 +30,7 @@ const shopCategorySlugs: Record<string, string> = {
 
 const productTypeSlugs: Record<string, string> = {
   Shirts: "shirt",
+  Hoodies: "hoodie",
   Sweatshirts: "sweatshirt",
   Couples: "shirt",
   Caps: "cap",
@@ -43,6 +45,7 @@ const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-
 export const shopCategories = [
   ["All products", "/shop", "all"],
   ["Shirts", "/shirts", "shirts"],
+  ["Hoodies", "/hoodies", "hoodies"],
   ["Sweatshirts", "/sweatshirts", "sweatshirts"],
   ["Couples", "/couples", "couples"],
   ["Gift & Homes", "/gifts-home", "gifts-home"],
