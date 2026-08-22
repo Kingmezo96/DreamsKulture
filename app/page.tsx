@@ -7,12 +7,12 @@ import { deliveryFee, money, products, type Product } from "@/app/_lib/storefron
 type CartItem = Product & { size: string; color: string; quantity: number };
 
 const heroSlides = [
-  { kicker: "faith tees", title: <>Wear the word.<br />Live the message.</>, image: "/campaign/faith-tees-rack.png", className: "hero-slide--shopping" },
-  { kicker: "couples collection", title: <>Faith together.<br />Love connected.</>, image: "/campaign/couple-connection.png", className: "hero-slide--gifting" },
-  { kicker: "gifts with meaning", title: <>Small reminders.<br />Lasting truth.</>, image: "/campaign/faith-accessories.png", className: "hero-slide--accessories" },
+  { kicker: "new shirts", title: <>Live by<br />faith.</>, image: "/products/just-a-girl-faith-shirt.svg", className: "hero-slide--shopping" },
+  { kicker: "sweatshirts", title: <>Not forsaken.<br />Always carried.</>, image: "/products/not-forsaken-sweatshirt.svg", className: "hero-slide--gifting" },
+  { kicker: "gifts with meaning", title: <>Caps, mugs,<br />totes & journals.</>, image: "/campaign/faith-accessories.png", className: "hero-slide--accessories" },
 ];
 
-const categories = ["All", "Couples Collection", "Women", "Men", "Faith Tees", "Gifts & Home"];
+const categories = ["All", "Shirts", "Sweatshirts", "Caps", "Mugs", "Tote Bags", "Journals"];
 const categoryStorageKey = "dreams-kulture-featured-category";
 
 function BrandLogo({ light = false }: { light?: boolean }) {
@@ -177,10 +177,7 @@ export default function Home() {
           <Link className="mol-header__logo" href="/"><BrandLogo /></Link>
           <nav className={`mol-nav ${menuOpen ? "mol-nav--open" : ""}`} aria-label="Main navigation">
             <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
-            <a href="/men" onClick={() => setMenuOpen(false)}>Men</a>
-            <a href="/women" onClick={() => setMenuOpen(false)}>Women</a>
-            <a href="/couples" onClick={() => setMenuOpen(false)}>Couples</a>
-            <a href="/gifts-home" onClick={() => setMenuOpen(false)}>Gifts & Home</a>
+            <a href="/shop" onClick={() => setMenuOpen(false)}>Shop</a>
             <a href="#custom" onClick={() => setMenuOpen(false)}>Custom print</a>
           </nav>
           <div className="mol-header__actions">
@@ -204,7 +201,7 @@ export default function Home() {
               <div className="hero-slide__content">
                 <span className="category-subtitle"><b>{slide.kicker.split(" ")[0]}</b> {slide.kicker.split(" ").slice(1).join(" ")}</span>
                 <h1>{slide.title}</h1>
-                <a className="mol-button" href={index === 2 ? "#custom" : "#shop"}><span>{index === 2 ? "Start a request" : "Shop now"}</span></a>
+                <a className="mol-button" href="#shop"><span>Shop now</span></a>
               </div>
             </article>
           ))}
@@ -218,27 +215,27 @@ export default function Home() {
 
       <section className="collection-section page-wrap" id="collections">
         <img className="collection-section__dots collection-section__dots--left" src="/mollee/vector-collections.svg" alt="" />
-        <div className="collection-stats" data-reveal><strong>09<span>+</span></strong><small>Faith-filled collections<br />made for every season</small></div>
+        <div className="collection-stats" data-reveal><strong>06<span></span></strong><small>Core shop categories<br />for this first drop</small></div>
         <div className="collection-mosaic">
           <article className="collection-tile collection-tile--one" data-reveal>
-            <div className="collection-tile__image"><img src="/campaign/couple-connection.png" alt="Dreams Kulture Couples Collection" /></div>
-            <div className="collection-tile__content"><span className="category-subtitle"><b>couples</b> collection</span><h2>Bound in faith.<br />Better together.</h2><a className="read-more" href="/couples">Shop the pair</a></div>
+            <div className="collection-tile__image"><img src="/products/just-a-girl-faith-shirt.svg" alt="Dreams Kulture Just a Girl Faith shirt" /></div>
+            <div className="collection-tile__content"><span className="category-subtitle"><b>shirts</b> collection</span><h2>Decided to<br />live by faith.</h2><a className="read-more" href="/shirts">Shop shirts</a></div>
           </article>
           <article className="sale-tile" data-reveal>
-            <img src="/campaign/faith-tees-rack.png" alt="Four Dreams Kulture faith T-shirts" />
-            <div className="sale-tile__copy"><h2>Four truths</h2><p>Black, cream, army green and maroon—made to carry the message.</p><a className="read-more" href="#shop">Shop faith tees</a></div>
+            <img src="/products/be-the-light-sweatshirt.svg" alt="Dreams Kulture Be the Light sweatshirt" />
+            <div className="sale-tile__copy"><h2>Six sweatshirts</h2><p>Not Forsaken, God’s Masterpiece, Be the Light, Walk by Faith, Be Salty Stay Lit and Let God Carry It.</p><a className="read-more" href="/sweatshirts">Shop sweatshirts</a></div>
           </article>
           <article className="collection-tile collection-tile--two" data-reveal>
-            <div className="collection-tile__image"><img src="/campaign/women-pray-boldly.png" alt="Dreams Kulture women’s Pray Boldly T-shirt" /></div>
-            <div className="collection-tile__content"><span className="category-subtitle"><b>her</b> faith</span><h2>Soft strength.<br />Bold prayer.</h2><a className="read-more" href="/women">Shop women</a></div>
+            <div className="collection-tile__image"><img src="/dream-kulture-brand-wall.jpg" alt="Dreams Kulture cap and accessories styling" /></div>
+            <div className="collection-tile__content"><span className="category-subtitle"><b>caps</b> & daily pieces</span><h2>Simple faith.<br />Everyday wear.</h2><a className="read-more" href="/caps">Shop caps</a></div>
           </article>
           <article className="collection-tile collection-tile--three" data-reveal>
             <div className="collection-tile__image"><img src="/campaign/faith-at-home.png" alt="Dreams Kulture faith-inspired home collection" /></div>
-            <div className="collection-tile__content"><span className="category-subtitle"><b>faith</b> at home</span><h2>Peace in<br />every room.</h2><a className="read-more" href="/gifts-home">Explore home</a></div>
+            <div className="collection-tile__content"><span className="category-subtitle"><b>journals</b> & gifts</span><h2>Write the<br />vision.</h2><a className="read-more" href="/journals">Shop journals</a></div>
           </article>
         </div>
         <div className="collection-stats collection-stats--right" data-reveal><strong>36<span>+</span></strong><small>States delivered<br />across Nigeria</small></div>
-        <a className="mol-button collection-cta" href="#shop"><span>View all collections</span></a>
+        <a className="mol-button collection-cta" href="/shop"><span>View shop</span></a>
       </section>
 
       <section className="catalog-section page-wrap" id="shop">
@@ -257,7 +254,7 @@ export default function Home() {
             <span className="category-subtitle"><b>custom</b> made</span>
             <h2>Faith for<br />every moment.</h2>
             <div className="deal-countdown"><div><strong>01</strong><span>idea</span></div><i>:</i><div><strong>03</strong><span>steps</span></div><i>:</i><div><strong>24</strong><span>hour reply</span></div></div>
-            <p>Personalised apparel, mugs, totes, caps, journals and gift sets for people, churches, couples and celebrations.</p>
+            <p>Personalised shirts, sweatshirts, mugs, totes, caps and journals for people, churches and celebrations.</p>
             <button className="mol-button" onClick={() => document.getElementById("custom-form")?.scrollIntoView({ behavior: "smooth" })}><span>Start your request</span></button>
           </div>
         </div>
@@ -280,7 +277,7 @@ export default function Home() {
         <div className="custom-form-copy" data-reveal><span className="category-subtitle"><b>tell us</b> your idea</span><h2>Something made<br />just for you.</h2><p>Share the product, quantity, message and occasion. Our team will review the details and send a tailored quote.</p></div>
         <form className="mol-form" onSubmit={(event) => submitDemo(event, "Thank you—your custom request is in. Our team will reply with a quote within one business day.")} data-reveal>
           <div className="field-grid"><label>Full name<input required placeholder="Your name" /></label><label>Phone / WhatsApp<input required type="tel" placeholder="+234" /></label></div>
-          <div className="field-grid"><label>Product<select required defaultValue=""><option value="" disabled>Select a product</option><option>Shirts & T-shirts</option><option>Hoodies</option><option>Couples Collection</option><option>Mugs & coffee sets</option><option>Tote bags & caps</option><option>Journals & home gifts</option></select></label><label>Quantity<input type="number" min="1" defaultValue="1" required /></label></div>
+          <div className="field-grid"><label>Product<select required defaultValue=""><option value="" disabled>Select a product</option><option>Shirts</option><option>Sweatshirts</option><option>Caps</option><option>Mugs</option><option>Tote bags</option><option>Journals</option></select></label><label>Quantity<input type="number" min="1" defaultValue="1" required /></label></div>
           <label>Email address<input required type="email" placeholder="you@example.com" /></label>
           <label>Describe the idea<textarea required rows={4} placeholder="Message, colours, sizes, event date and any details that matter…" /></label>
           <label className="file-field"><input type="file" accept="image/*,.pdf" /><span>＋</span><b>Add a logo or reference file</b><small>PNG, JPG or PDF · up to 10MB</small></label>
@@ -291,8 +288,8 @@ export default function Home() {
       <section className="journal page-wrap" id="journal">
         <div className="section-title" data-reveal><span className="category-subtitle">our <b>journal</b></span><h2>Stories behind the message</h2><p>Style, faith and thoughtful gifting—notes from the Dreams Kulture community.</p></div>
         <div className="journal-grid">
-          <article data-reveal><div className="journal-image"><img src="/campaign/couple-connection.png" alt="Dreams Kulture Couples Collection" /></div><div className="journal-card"><h3>Faith, friendship and the cord of three</h3><time>July 27, 2026</time><a className="read-more" href="/couples">Read story</a></div></article>
-          <article data-reveal><div className="journal-image"><img src="/campaign/faith-at-home.png" alt="Dreams Kulture faith-inspired home collection" /></div><div className="journal-card"><h3>Creating a home filled with gentle reminders</h3><time>July 24, 2026</time><a className="read-more" href="#shop">Read story</a></div></article>
+          <article data-reveal><div className="journal-image"><img src="/products/just-a-girl-faith-shirt.svg" alt="Dreams Kulture shirt designs" /></div><div className="journal-card"><h3>The meaning behind deciding to live by faith</h3><time>August 22, 2026</time><a className="read-more" href="/shirts">Read story</a></div></article>
+          <article data-reveal><div className="journal-image"><img src="/campaign/faith-at-home.png" alt="Dreams Kulture journals and home gifts" /></div><div className="journal-card"><h3>Creating daily reminders for prayer and focus</h3><time>August 22, 2026</time><a className="read-more" href="/journals">Read story</a></div></article>
         </div>
       </section>
 
@@ -308,7 +305,7 @@ export default function Home() {
         <img className="footer-dots footer-dots--right" src="/mollee/vector-footer-right.svg" alt="" />
         <div className="mol-footer__top page-wrap">
           <div className="footer-brand"><BrandLogo /><p>Faith-inspired apparel, prints and gifts—designed in Nigeria, delivered worldwide.</p><div className="footer-socials"><a href="#">FB</a><a href="#">X</a><a href="https://www.instagram.com/dreamskulture_/" target="_blank" rel="noreferrer" aria-label="Dreams Kulture on Instagram">INS</a><a href="#">PIN</a></div></div>
-          <div className="footer-links"><div><h3>About</h3><a href="#collections">Collections</a><a href="#shop">Shop</a><a href="#journal">Journal</a><a href="#contact">Contact us</a></div><div><h3>Useful links</h3><a href="#">Privacy policy</a><a href="#">Terms of use</a><a href="#">Shipping details</a><a href="#">FAQs</a></div></div>
+          <div className="footer-links"><div><h3>About</h3><a href="#collections">Drop</a><a href="#shop">Shop</a><a href="#journal">Journal</a><a href="#contact">Contact us</a></div><div><h3>Useful links</h3><a href="#">Privacy policy</a><a href="#">Terms of use</a><a href="#">Shipping details</a><a href="#">FAQs</a></div></div>
           <div className="footer-contact"><h3>Visit & contact</h3><p>Lagos, Nigeria<br />Mon–Sat, 9am–6pm</p><a href="mailto:hello@dreamskulture.com">hello@dreamskulture.com</a><a href="https://wa.me/2348104268019" target="_blank" rel="noreferrer">+234 810 426 8019 · WhatsApp</a><a href="https://www.instagram.com/dreamskulture_/" target="_blank" rel="noreferrer">@dreamskulture_ · Instagram</a></div>
         </div>
         <div className="mol-footer__bottom page-wrap"><span>© 2026 Dreams Kulture</span><span>Designed with faith + intention</span></div>

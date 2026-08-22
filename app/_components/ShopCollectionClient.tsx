@@ -2,17 +2,9 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import type { StoreProduct } from "../_lib/catalog";
+import { shopCategories, type StoreProduct } from "../_lib/catalog";
 import { money } from "../_lib/storefront-products";
 import type { CollectionConfig } from "./CollectionPage";
-
-const collectionLinks = [
-  ["All products", "/#shop"],
-  ["Men", "/men"],
-  ["Women", "/women"],
-  ["Couples Collection", "/couples"],
-  ["Gifts & Home", "/gifts-home"],
-];
 
 export default function ShopCollectionClient({ config, products }: { config: CollectionConfig; products: StoreProduct[] }) {
   const ceiling = Math.max(40000, ...products.map((product) => Number(product.price)));
@@ -64,7 +56,7 @@ export default function ShopCollectionClient({ config, products }: { config: Col
           <div className="shop-filter">
             <h2>Categories</h2>
             <nav aria-label="Product categories">
-              {collectionLinks.map(([label, href]) => <Link key={href} className={label === config.title ? "active" : ""} href={href}>{label}</Link>)}
+              {shopCategories.map(([label, href, slug]) => <Link key={href} className={slug === config.slug ? "active" : ""} href={href}>{label}</Link>)}
             </nav>
           </div>
 

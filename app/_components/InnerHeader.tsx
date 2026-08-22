@@ -5,10 +5,7 @@ import { useState } from "react";
 
 const navigation = [
   ["Home", "/"],
-  ["Men", "/men"],
-  ["Women", "/women"],
-  ["Couples", "/couples"],
-  ["Gifts & Home", "/gifts-home"],
+  ["Shop", "/shop"],
   ["Custom print", "/#custom"],
 ];
 
