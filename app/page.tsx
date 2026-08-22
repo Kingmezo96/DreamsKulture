@@ -7,12 +7,12 @@ import { deliveryFee, money, products, type Product } from "@/app/_lib/storefron
 type CartItem = Product & { size: string; color: string; quantity: number };
 
 const heroSlides = [
-  { kicker: "new shirts", title: <>Live by<br />faith.</>, image: "/products/just-a-girl-faith-shirt.svg", className: "hero-slide--shopping" },
-  { kicker: "sweatshirts", title: <>Not forsaken.<br />Always carried.</>, image: "/products/not-forsaken-sweatshirt.svg", className: "hero-slide--gifting" },
+  { kicker: "new shirts", title: <>Live by<br />faith.</>, image: "/campaign/faith-tees-rack.png", className: "hero-slide--shopping" },
+  { kicker: "sweatshirts", title: <>Not forsaken.<br />Always carried.</>, image: "/campaign/men-the-way.png", className: "hero-slide--gifting" },
   { kicker: "gifts with meaning", title: <>Caps, mugs,<br />totes & journals.</>, image: "/campaign/faith-accessories.png", className: "hero-slide--accessories" },
 ];
 
-const categories = ["All", "Shirts", "Sweatshirts", "Caps", "Mugs", "Tote Bags", "Journals"];
+const categories = ["All", "Shirts", "Sweatshirts", "Couples", "Gift & Homes"];
 const categoryStorageKey = "dreams-kulture-featured-category";
 
 function BrandLogo({ light = false }: { light?: boolean }) {
@@ -178,6 +178,8 @@ export default function Home() {
           <nav className={`mol-nav ${menuOpen ? "mol-nav--open" : ""}`} aria-label="Main navigation">
             <Link href="/" onClick={() => setMenuOpen(false)}>Home</Link>
             <a href="/shop" onClick={() => setMenuOpen(false)}>Shop</a>
+            <a href="/couples" onClick={() => setMenuOpen(false)}>Couples</a>
+            <a href="/gifts-home" onClick={() => setMenuOpen(false)}>Gift & Homes</a>
             <a href="#custom" onClick={() => setMenuOpen(false)}>Custom print</a>
           </nav>
           <div className="mol-header__actions">
@@ -218,11 +220,11 @@ export default function Home() {
         <div className="collection-stats" data-reveal><strong>06<span></span></strong><small>Core shop categories<br />for this first drop</small></div>
         <div className="collection-mosaic">
           <article className="collection-tile collection-tile--one" data-reveal>
-            <div className="collection-tile__image"><img src="/products/just-a-girl-faith-shirt.svg" alt="Dreams Kulture Just a Girl Faith shirt" /></div>
+            <div className="collection-tile__image"><img src="/campaign/women-pray-boldly.png" alt="Dreams Kulture Just a Girl Faith shirt" /></div>
             <div className="collection-tile__content"><span className="category-subtitle"><b>shirts</b> collection</span><h2>Decided to<br />live by faith.</h2><a className="read-more" href="/shirts">Shop shirts</a></div>
           </article>
           <article className="sale-tile" data-reveal>
-            <img src="/products/be-the-light-sweatshirt.svg" alt="Dreams Kulture Be the Light sweatshirt" />
+            <img src="/campaign/men-the-way.png" alt="Dreams Kulture Be the Light sweatshirt" />
             <div className="sale-tile__copy"><h2>Six sweatshirts</h2><p>Not Forsaken, God’s Masterpiece, Be the Light, Walk by Faith, Be Salty Stay Lit and Let God Carry It.</p><a className="read-more" href="/sweatshirts">Shop sweatshirts</a></div>
           </article>
           <article className="collection-tile collection-tile--two" data-reveal>
@@ -277,7 +279,7 @@ export default function Home() {
         <div className="custom-form-copy" data-reveal><span className="category-subtitle"><b>tell us</b> your idea</span><h2>Something made<br />just for you.</h2><p>Share the product, quantity, message and occasion. Our team will review the details and send a tailored quote.</p></div>
         <form className="mol-form" onSubmit={(event) => submitDemo(event, "Thank you—your custom request is in. Our team will reply with a quote within one business day.")} data-reveal>
           <div className="field-grid"><label>Full name<input required placeholder="Your name" /></label><label>Phone / WhatsApp<input required type="tel" placeholder="+234" /></label></div>
-          <div className="field-grid"><label>Product<select required defaultValue=""><option value="" disabled>Select a product</option><option>Shirts</option><option>Sweatshirts</option><option>Caps</option><option>Mugs</option><option>Tote bags</option><option>Journals</option></select></label><label>Quantity<input type="number" min="1" defaultValue="1" required /></label></div>
+          <div className="field-grid"><label>Product<select required defaultValue=""><option value="" disabled>Select a product</option><option>Shirts</option><option>Sweatshirts</option><option>Couples</option><option>Mugs</option><option>Throw pillows</option></select></label><label>Quantity<input type="number" min="1" defaultValue="1" required /></label></div>
           <label>Email address<input required type="email" placeholder="you@example.com" /></label>
           <label>Describe the idea<textarea required rows={4} placeholder="Message, colours, sizes, event date and any details that matter…" /></label>
           <label className="file-field"><input type="file" accept="image/*,.pdf" /><span>＋</span><b>Add a logo or reference file</b><small>PNG, JPG or PDF · up to 10MB</small></label>
@@ -288,7 +290,7 @@ export default function Home() {
       <section className="journal page-wrap" id="journal">
         <div className="section-title" data-reveal><span className="category-subtitle">our <b>journal</b></span><h2>Stories behind the message</h2><p>Style, faith and thoughtful gifting—notes from the Dreams Kulture community.</p></div>
         <div className="journal-grid">
-          <article data-reveal><div className="journal-image"><img src="/products/just-a-girl-faith-shirt.svg" alt="Dreams Kulture shirt designs" /></div><div className="journal-card"><h3>The meaning behind deciding to live by faith</h3><time>August 22, 2026</time><a className="read-more" href="/shirts">Read story</a></div></article>
+          <article data-reveal><div className="journal-image"><img src="/campaign/women-pray-boldly.png" alt="Dreams Kulture shirt designs" /></div><div className="journal-card"><h3>The meaning behind deciding to live by faith</h3><time>August 22, 2026</time><a className="read-more" href="/shirts">Read story</a></div></article>
           <article data-reveal><div className="journal-image"><img src="/campaign/faith-at-home.png" alt="Dreams Kulture journals and home gifts" /></div><div className="journal-card"><h3>Creating daily reminders for prayer and focus</h3><time>August 22, 2026</time><a className="read-more" href="/journals">Read story</a></div></article>
         </div>
       </section>
