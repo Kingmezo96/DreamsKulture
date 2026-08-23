@@ -47,6 +47,7 @@ export const shopCategories = [
   ["Shirts", "/shirts", "shirts"],
   ["Hoodies", "/hoodies", "hoodies"],
   ["Sweatshirts", "/sweatshirts", "sweatshirts"],
+  ["Caps", "/caps", "caps"],
   ["Couples", "/couples", "couples"],
   ["Gift & Homes", "/gifts-home", "gifts-home"],
 ] as const;

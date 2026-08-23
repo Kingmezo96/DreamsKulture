@@ -12,7 +12,7 @@ const heroSlides = [
   { kicker: "gifts with meaning", title: <>Caps, mugs,<br />totes & journals.</>, image: "/campaign/faith-accessories.png", className: "hero-slide--accessories" },
 ];
 
-const categories = ["All", "Shirts", "Hoodies", "Sweatshirts", "Couples", "Gift & Homes"];
+const categories = ["All", "Shirts", "Hoodies", "Sweatshirts", "Caps", "Couples", "Gift & Homes"];
 const categoryStorageKey = "dreams-kulture-featured-category";
 
 function BrandLogo({ light = false }: { light?: boolean }) {
@@ -254,7 +254,7 @@ export default function Home() {
         <div className="custom-form-copy" data-reveal><span className="category-subtitle"><b>tell us</b> your idea</span><h2>Something made<br />just for you.</h2><p>Share the product, quantity, message and occasion. Our team will review the details and send a tailored quote.</p></div>
         <form className="mol-form" onSubmit={(event) => submitDemo(event, "Thank you—your custom request is in. Our team will reply with a quote within one business day.")} data-reveal>
           <div className="field-grid"><label>Full name<input required placeholder="Your name" /></label><label>Phone / WhatsApp<input required type="tel" placeholder="+234" /></label></div>
-          <div className="field-grid"><label>Product<select required defaultValue=""><option value="" disabled>Select a product</option><option>Shirts</option><option>Hoodies</option><option>Sweatshirts</option><option>Couples</option><option>Mugs</option><option>Throw pillows</option></select></label><label>Quantity<input type="number" min="1" defaultValue="1" required /></label></div>
+          <div className="field-grid"><label>Product<select required defaultValue=""><option value="" disabled>Select a product</option><option>Shirts</option><option>Hoodies</option><option>Sweatshirts</option><option>Caps</option><option>Couples</option><option>Mugs</option><option>Throw pillows</option></select></label><label>Quantity<input type="number" min="1" defaultValue="1" required /></label></div>
           <label>Email address<input required type="email" placeholder="you@example.com" /></label>
           <label>Describe the idea<textarea required rows={4} placeholder="Message, colours, sizes, event date and any details that matter…" /></label>
           <label className="file-field"><input type="file" accept="image/*,.pdf" /><span>＋</span><b>Add a logo or reference file</b><small>PNG, JPG or PDF · up to 10MB</small></label>
