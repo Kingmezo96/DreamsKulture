@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { deliveryFee, getShippingOption, money, products, shippingOptions, type Product } from "@/app/_lib/storefront-products";
+import { deliveryFee, getShippingOption, money, products, shippingOptions, type Product, type ShippingOptionId } from "@/app/_lib/storefront-products";
 
 type CartItem = Product & { size: string; color: string; quantity: number };
 
@@ -63,7 +63,7 @@ export default function Home() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
-  const [shippingOptionId, setShippingOptionId] = useState(shippingOptions[0].id);
+  const [shippingOptionId, setShippingOptionId] = useState<ShippingOptionId>(shippingOptions[0].id);
   const [formMessage, setFormMessage] = useState("");
 
   useEffect(() => {
