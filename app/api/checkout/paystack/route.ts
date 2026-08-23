@@ -9,6 +9,7 @@ export async function POST(request: Request) {
     const checkout = await initializePaystackCheckout({
       customer: body.customer,
       items: body.items,
+      shippingOptionId: body.shippingOptionId,
       request,
     });
 

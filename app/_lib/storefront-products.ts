@@ -15,16 +15,16 @@ export type Product = {
 };
 
 export const products: Product[] = [
-  { id: 1, name: "Just a Girl Faith Shirt", category: "Shirts", collection: "Shirts", price: 10000, message: "JUST A GIRL WHO DECIDED TO LIVE BY FAITH", scripture: "2 Corinthians 5:7", tone: "ink", image: "/campaign/women-pray-boldly.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
-  { id: 2, name: "Always Doing Wonders Shirt", category: "Shirts", collection: "Shirts", price: 10000, message: "ALWAYS DOING WONDERS", scripture: "Psalm 77:14", tone: "ink", image: "/campaign/always-doing-wonders-shirt.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
-  { id: 3, name: "King Priest Shirt", category: "Shirts", collection: "Shirts", price: 10000, message: "KING PRIEST", scripture: "Revelation 1:6", tone: "clay", image: "/campaign/king-priest-shirt.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
-  { id: 15, name: "Walk by Faith Shirt", category: "Shirts", collection: "Shirts", price: 10000, message: "WALK BY FAITH", scripture: "2 Corinthians 5:7", tone: "stone", image: "/campaign/walk-by-faith-shirt-closeup.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
-  { id: 16, name: "Grace Upon Grace Shirt", category: "Shirts", collection: "Shirts", price: 10000, message: "GRACE UPON GRACE", scripture: "John 1:16", tone: "linen", image: "/campaign/grace-upon-grace-shirt-closeup.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
-  { id: 17, name: "Pray Big Shirt", category: "Shirts", collection: "Shirts", price: 10000, message: "PRAY BIG", scripture: "Ephesians 3:20", tone: "moss", image: "/campaign/pray-big-shirt-closeup.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
-  { id: 18, name: "Chosen Shirt", category: "Shirts", collection: "Shirts", price: 10000, message: "CHOSEN", scripture: "1 Peter 2:9", tone: "clay", image: "/campaign/chosen-shirt-closeup.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
+  { id: 1, name: "Just a Girl Faith Shirt", category: "Shirts", collection: "Shirts", price: 12000, message: "JUST A GIRL WHO DECIDED TO LIVE BY FAITH", scripture: "2 Corinthians 5:7", tone: "ink", image: "/campaign/women-pray-boldly.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
+  { id: 2, name: "Always Doing Wonders Shirt", category: "Shirts", collection: "Shirts", price: 12000, message: "ALWAYS DOING WONDERS", scripture: "Psalm 77:14", tone: "ink", image: "/campaign/always-doing-wonders-shirt.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
+  { id: 3, name: "King Priest Shirt", category: "Shirts", collection: "Shirts", price: 12000, message: "KING PRIEST", scripture: "Revelation 1:6", tone: "clay", image: "/campaign/king-priest-shirt.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
+  { id: 15, name: "Walk by Faith Shirt", category: "Shirts", collection: "Shirts", price: 12000, message: "WALK BY FAITH", scripture: "2 Corinthians 5:7", tone: "stone", image: "/campaign/walk-by-faith-shirt-closeup.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
+  { id: 16, name: "Grace Upon Grace Shirt", category: "Shirts", collection: "Shirts", price: 12000, message: "GRACE UPON GRACE", scripture: "John 1:16", tone: "linen", image: "/campaign/grace-upon-grace-shirt-closeup.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
+  { id: 17, name: "Pray Big Shirt", category: "Shirts", collection: "Shirts", price: 12000, message: "PRAY BIG", scripture: "Ephesians 3:20", tone: "moss", image: "/campaign/pray-big-shirt-closeup.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
+  { id: 18, name: "Chosen Shirt", category: "Shirts", collection: "Shirts", price: 12000, message: "CHOSEN", scripture: "1 Peter 2:9", tone: "clay", image: "/campaign/chosen-shirt-closeup.png", badge: "new", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
   { id: 4, name: "Not Forsaken Hoodie", category: "Hoodies", collection: "Hoodies", price: 25000, message: "NOT FORSAKEN", scripture: "Deuteronomy 31:8", tone: "chalk", image: "/campaign/not-forsaken-hoodie.png", badge: "top", sizes: ["M", "L", "XL", "XXL"], colors: ["White", "Black", "Red", "Army Green"] },
   { id: 5, name: "God Is Good Hoodie", category: "Hoodies", collection: "Hoodies", price: 25000, message: "GOD IS GOOD", scripture: "Psalm 34:8", tone: "ink", image: "/campaign/god-is-good-hoodie.png", badge: "new", sizes: ["M", "L", "XL", "XXL"], colors: ["White", "Black", "Red", "Army Green"] },
-  { id: 6, name: "God’s Masterpiece Sweatshirt", category: "Sweatshirts", collection: "Sweatshirts", price: 20000, message: "GOD’S MASTERPIECE", scripture: "Ephesians 2:10", tone: "paper", image: "/dream-kulture-shopping.jpg", badge: "new", sizes: ["M", "L", "XL", "XXL"], colors: ["White", "Black", "Red", "Army Green"] },
+  { id: 6, name: "God’s Masterpiece Sweatshirt", category: "Sweatshirts", collection: "Sweatshirts", price: 20000, message: "GOD’S MASTERPIECE", scripture: "Ephesians 2:10", tone: "paper", image: "/campaign/gods-masterpiece-sweatshirt.png", badge: "new", sizes: ["M", "L", "XL", "XXL"], colors: ["White", "Black", "Red", "Army Green"] },
   { id: 7, name: "Be the Light Sweatshirt", category: "Sweatshirts", collection: "Sweatshirts", price: 20000, message: "BE THE LIGHT", scripture: "Matthew 5:14", tone: "mist", image: "/campaign/be-the-light-white-sweatshirt.png", sizes: ["M", "L", "XL", "XXL"], colors: ["White", "Black"] },
   { id: 8, name: "Walk by Faith Sweatshirt", category: "Sweatshirts", collection: "Sweatshirts", price: 20000, message: "WALK BY FAITH", scripture: "2 Corinthians 5:7", tone: "clay", image: "/campaign/walk-by-faith-black-african-model.png", sizes: ["M", "L", "XL", "XXL"], colors: ["White", "Black"] },
   { id: 9, name: "Be Salty Stay Lit Sweatshirt", category: "Sweatshirts", collection: "Sweatshirts", price: 20000, message: "BE SALTY STAY LIT", scripture: "Matthew 5:13–14", tone: "stone", image: "/campaign/men-the-way.png", sizes: ["M", "L", "XL", "XXL"], colors: ["White", "Black", "Red", "Army Green"] },
@@ -37,7 +37,55 @@ export const products: Product[] = [
 
 export const currency = "NGN";
 
-export const deliveryFee = (subtotal: number) => subtotal >= 75000 ? 0 : 8000;
+export const shippingOptions = [
+  {
+    id: "pickup-kubwa",
+    title: "Pickup — Kubwa",
+    price: 0,
+    description: "Pickup at No 8 Emmanuel Close, Arab Road, Kubwa. No delivery fee.",
+  },
+  {
+    id: "abuja-central",
+    title: "Abuja Central Locations",
+    price: 3500,
+    description: "Central Area, Mabushi, Wuse, Garki, Jahi, Wuye, Jabi, Kado and Maitama.",
+  },
+  {
+    id: "abuja-area-b",
+    title: "Abuja Area B",
+    price: 4000,
+    description: "Lokogoma, Apo, Prince and Princess, Durumi, Games Village, AYA, Kabusa, Karmo, Suncity and Idu.",
+  },
+  {
+    id: "abuja-area-c",
+    title: "Abuja Area C",
+    price: 4500,
+    description: "Karmo, Damunde, Suncity, Idu, Gwarinpa and other Area C locations.",
+  },
+  {
+    id: "abuja-non-central",
+    title: "Abuja Non Central",
+    price: 5000,
+    description: "Kugbo, Wumba, Kubwa, Lugbe and Dawaki. Delivery is usually the next day after production.",
+  },
+  {
+    id: "nyanya-maraba-karu",
+    title: "Nyanya, Mararaba, Karu",
+    price: 6000,
+    description: "Nyanya, Mararaba, Karu and Airport axis. Delivery is usually the next day after production.",
+  },
+  {
+    id: "outside-abuja",
+    title: "All States Outside Abuja",
+    price: 7000,
+    description: "All states outside Abuja except Enugu, Edo, Bayelsa, Benin, Port Harcourt and Calabar. 0–2kg only; extra kg attracts ₦1,000.",
+  },
+] as const;
+
+export type ShippingOptionId = typeof shippingOptions[number]["id"];
+
+export const getShippingOption = (id?: string) => shippingOptions.find((option) => option.id === id) ?? shippingOptions[0];
+export const deliveryFee = (_subtotal: number, shippingOptionId?: string) => getShippingOption(shippingOptionId).price;
 
 export const money = (value: number) => new Intl.NumberFormat("en-NG", {
   style: "currency",

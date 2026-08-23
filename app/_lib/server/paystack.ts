@@ -1,4 +1,4 @@
-import { products, currency, deliveryFee } from "@/app/_lib/storefront-products";
+import { products, currency, deliveryFee, getShippingOption } from "@/app/_lib/storefront-products";
 import { supabaseAdminRequest } from "@/app/_lib/server/supabase-admin";
 
 type CheckoutItem = {
@@ -110,18 +110,22 @@ export function buildCheckoutSummary(items: CheckoutItem[]) {
 export async function initializePaystackCheckout(input: {
   customer: Customer;
   items: CheckoutItem[];
+  shippingOptionId?: string;
   request: Request;
 }) {
-  const customer = validateCustomer(input.customer);
+  const shippingOption = getShippingOption(input.shippingOptionId);
+  const customer = validateCustomer(input.customer, shippingOption.id === "pickup-kubwa");
   const summary = buildCheckoutSummary(input.items);
+  const shipping = deliveryFee(summary.subtotal, shippingOption.id);
+  const total = summary.subtotal + shipping;
   const reference = `DK-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`.toUpperCase();
   const fullName = `${customer.firstName} ${customer.lastName}`.trim();
   const addressPayload = {
     recipient_name: fullName,
     phone: customer.phone,
-    line1: customer.address,
-    city: customer.city,
-    state_region: customer.state,
+    line1: shippingOption.id === "pickup-kubwa" ? "Pickup at No 8 Emmanuel Close, Arab Road, Kubwa" : customer.address,
+    city: shippingOption.id === "pickup-kubwa" ? "Kubwa" : customer.city,
+    state_region: shippingOption.id === "pickup-kubwa" ? "Abuja" : customer.state,
     country: customer.country,
     country_code: customer.country.toLowerCase() === "nigeria" ? "NG" : null,
   };
@@ -134,15 +138,16 @@ export async function initializePaystackCheckout(input: {
       customer_phone: customer.phone,
       currency,
       subtotal: summary.subtotal,
-      shipping_total: summary.shipping,
-      grand_total: summary.total,
+      shipping_total: shipping,
+      grand_total: total,
       shipping_address: addressPayload,
       billing_address: addressPayload,
-      customer_note: "Paystack checkout",
+      customer_note: shippingOption.id === "pickup-kubwa" ? "Pickup at No 8 Emmanuel Close, Arab Road, Kubwa" : `Paystack checkout · ${shippingOption.title}`,
       metadata: {
         provider: "paystack",
         provider_reference: reference,
         source: "storefront",
+        shipping_option: shippingOption,
       },
     },
   });
@@ -176,11 +181,12 @@ export async function initializePaystackCheckout(input: {
       provider: "paystack",
       provider_reference: reference,
       status: "pending",
-      amount: summary.total,
+      amount: total,
       currency,
       metadata: {
         order_number: order.order_number,
         initialized_from: "storefront",
+        shipping_option: shippingOption,
       },
     },
   });
@@ -193,7 +199,7 @@ export async function initializePaystackCheckout(input: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      amount: Math.round(summary.total * 100),
+      amount: Math.round(total * 100),
       email: customer.email,
       currency,
       reference,
@@ -203,6 +209,8 @@ export async function initializePaystackCheckout(input: {
         order_number: order.order_number,
         customer_name: fullName,
         customer_phone: customer.phone,
+        shipping_option: shippingOption.title,
+        shipping_amount: shipping,
         cart: summary.items.map((item) => ({
           name: item.product.name,
           quantity: item.quantity,
@@ -223,7 +231,7 @@ export async function initializePaystackCheckout(input: {
     authorizationUrl: payload.data.authorization_url,
     reference,
     orderNumber: order.order_number,
-    total: summary.total,
+    total,
   };
 }
 
@@ -305,7 +313,7 @@ async function markPaymentFailed(reference: string, payload: unknown) {
   });
 }
 
-function validateCustomer(customer: Customer): Customer {
+function validateCustomer(customer: Customer, allowPickupAddress = false): Customer {
   const cleaned = {
     firstName: customer.firstName?.trim(),
     lastName: customer.lastName?.trim(),
@@ -317,7 +325,7 @@ function validateCustomer(customer: Customer): Customer {
     state: customer.state?.trim(),
   };
 
-  if (!cleaned.firstName || !cleaned.lastName || !cleaned.email || !cleaned.phone || !cleaned.country || !cleaned.address || !cleaned.city || !cleaned.state) {
+  if (!cleaned.firstName || !cleaned.lastName || !cleaned.email || !cleaned.phone || !cleaned.country || (!allowPickupAddress && (!cleaned.address || !cleaned.city || !cleaned.state))) {
     throw new Error("Please complete all delivery details.");
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleaned.email)) {
