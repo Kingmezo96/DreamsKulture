@@ -33,6 +33,9 @@ export const products: Product[] = [
   { id: 12, name: "Cord of Three Couples Tee", category: "Couples", collection: "Couples", price: 18000, message: "CORD OF THREE", scripture: "Ecclesiastes 4:12", tone: "paper", image: "/campaign/couple-connection.png", sizes: ["S", "M", "L", "XL", "XXL"], colors: ["White", "Black", "Green", "Blue", "Yellow", "Maroon", "Coffee Brown", "Chocolate Brown", "Red"] },
   { id: 13, name: "Grace for Today Mug", category: "Gift & Homes", collection: "Gift & Homes", price: 10000, message: "GRACE FOR TODAY", scripture: "Lamentations 3:23", tone: "stone", image: "/campaign/faith-accessories.png", sizes: ["12 oz"], colors: ["White", "Cream"] },
   { id: 14, name: "Peace Be Still Throw Pillow", category: "Gift & Homes", collection: "Gift & Homes", price: 25000, message: "PEACE, BE STILL", scripture: "Mark 4:39", tone: "gift", image: "/campaign/faith-at-home.png", sizes: ["18 × 18 in"], colors: ["Cream", "Sage"] },
+  { id: 19, name: "Cross Equals Love Journal", category: "Journals", collection: "Journals", price: 10000, message: "CROSS EQUALS LOVE", scripture: "John 3:16", tone: "ink", image: "/campaign/cross-equals-love-journal.png", badge: "new", sizes: ["A5"], colors: ["Black"] },
+  { id: 20, name: "But God Prayer Journal", category: "Journals", collection: "Journals", price: 10000, message: "BUT GOD", scripture: "God will make a way", tone: "ink", image: "/campaign/but-god-journal.jpg", badge: "new", sizes: ["A5"], colors: ["Black"] },
+  { id: 21, name: "Be Still and Know Journal", category: "Journals", collection: "Journals", price: 10000, message: "BE STILL AND KNOW", scripture: "Psalm 46:10", tone: "gift", image: "/campaign/be-still-know-journal.jpg", badge: "new", sizes: ["A5"], colors: ["Blush"] },
 ];
 
 export const currency = "NGN";
@@ -79,6 +82,30 @@ export const shippingOptions = [
     title: "All States Outside Abuja",
     price: 7000,
     description: "All states outside Abuja except Enugu, Edo, Bayelsa, Benin, Port Harcourt and Calabar. 0–2kg only; extra kg attracts ₦1,000.",
+  },
+  {
+    id: "europe",
+    title: "Europe",
+    price: 78500,
+    description: "For all countries in Europe, 0–2KG (equivalent of 5 shirts). Extra KG might attract an extra cost.",
+  },
+  {
+    id: "united-kingdom",
+    title: "United Kingdom",
+    price: 65000,
+    description: "For all cities in the UK, 0–2KG (equivalent of 5 shirts). Extra KG might attract an additional cost.",
+  },
+  {
+    id: "usa-canada",
+    title: "USA & Canada",
+    price: 70000,
+    description: "0–2KG (equivalent of 5 shirts). Extra KG might attract an additional cost.",
+  },
+  {
+    id: "west-africa",
+    title: "West Africa",
+    price: 65000,
+    description: "West African countries, 0–2KG (equivalent of 5 shirts). Extra KG might attract an additional cost.",
   },
 ] as const;
 
