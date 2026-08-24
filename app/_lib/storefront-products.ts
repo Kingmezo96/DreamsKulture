@@ -45,7 +45,7 @@ export const shippingOptions = [
     id: "pickup-kubwa",
     title: "Pickup — Kubwa",
     price: 0,
-    description: "Pickup at No 8 Emmanuel Close, Arab Road, Kubwa. No delivery fee.",
+    description: "Pickup at Arab Road, Kubwa, Abuja. No delivery fee.",
   },
   {
     id: "abuja-central",

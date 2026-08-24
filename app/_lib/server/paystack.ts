@@ -135,7 +135,7 @@ export async function initializePaystackCheckout(input: {
   const addressPayload = {
     recipient_name: fullName,
     phone: customer.phone,
-    line1: shippingOption.id === "pickup-kubwa" ? "Pickup at No 8 Emmanuel Close, Arab Road, Kubwa" : customer.address,
+    line1: shippingOption.id === "pickup-kubwa" ? "Pickup at Arab Road, Kubwa, Abuja" : customer.address,
     city: shippingOption.id === "pickup-kubwa" ? "Kubwa" : customer.city,
     state_region: shippingOption.id === "pickup-kubwa" ? "Abuja" : customer.state,
     country: customer.country,
@@ -154,7 +154,7 @@ export async function initializePaystackCheckout(input: {
       grand_total: total,
       shipping_address: addressPayload,
       billing_address: addressPayload,
-      customer_note: shippingOption.id === "pickup-kubwa" ? "Pickup at No 8 Emmanuel Close, Arab Road, Kubwa" : `Paystack checkout · ${shippingOption.title}`,
+      customer_note: shippingOption.id === "pickup-kubwa" ? "Pickup at Arab Road, Kubwa, Abuja" : `Paystack checkout · ${shippingOption.title}`,
       metadata: {
         provider: "paystack",
         provider_reference: reference,
