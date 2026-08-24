@@ -235,8 +235,15 @@ export async function initializePaystackCheckout(input: {
   };
 }
 
-export async function verifyPaystackReference(reference: string) {
-  const cleanReference = reference.trim();
+function normalizePaystackReference(reference: unknown) {
+  if (Array.isArray(reference)) return normalizePaystackReference(reference[0]);
+  if (typeof reference === "string") return reference.trim();
+  if (reference == null) return "";
+  return String(reference).trim();
+}
+
+export async function verifyPaystackReference(reference: unknown) {
+  const cleanReference = normalizePaystackReference(reference);
   if (!cleanReference) throw new Error("Missing Paystack reference.");
 
   const [payment] = await supabaseAdminRequest<PaymentRow[]>(

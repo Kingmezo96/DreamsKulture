@@ -4,21 +4,22 @@ import { verifyPaystackReference } from "@/app/_lib/server/paystack";
 export const dynamic = "force-dynamic";
 
 type PaymentCallbackPageProps = {
-  searchParams: Promise<{ reference?: string }>;
+  searchParams: Promise<{ reference?: string | string[] }>;
 };
 
 export default async function PaymentCallbackPage({ searchParams }: PaymentCallbackPageProps) {
   const { reference = "" } = await searchParams;
+  const cleanReference = Array.isArray(reference) ? reference[0] ?? "" : reference;
   let result: Awaited<ReturnType<typeof verifyPaystackReference>>;
 
   try {
-    result = await verifyPaystackReference(reference);
+    result = await verifyPaystackReference(cleanReference);
   } catch (error) {
     result = {
       ok: false,
       status: "failed",
       message: error instanceof Error ? error.message : "We could not verify this payment.",
-      reference,
+      reference: cleanReference,
     };
   }
 
