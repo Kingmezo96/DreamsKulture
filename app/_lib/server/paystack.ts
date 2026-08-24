@@ -1,5 +1,6 @@
 import { products, currency, deliveryFee, getShippingOption } from "@/app/_lib/storefront-products";
 import { supabaseAdminRequest } from "@/app/_lib/server/supabase-admin";
+import { sendThankYouEmail } from "@/app/_lib/server/thank-you-email";
 
 type CheckoutItem = {
   id: number;
@@ -56,6 +57,17 @@ type PaymentRow = {
   status: "pending" | "authorized" | "paid" | "failed" | "refunded";
   amount: number;
   currency: string;
+};
+
+type OrderEmailRow = {
+  order_number: string;
+  customer_email: string;
+  customer_phone: string;
+  grand_total: number;
+  currency: string;
+  shipping_address: {
+    recipient_name?: string;
+  } | null;
 };
 
 const PAYSTACK_BASE_URL = "https://api.paystack.co";
@@ -208,7 +220,10 @@ export async function initializePaystackCheckout(input: {
         order_id: order.id,
         order_number: order.order_number,
         customer_name: fullName,
+        customer_first_name: customer.firstName,
+        customer_last_name: customer.lastName,
         customer_phone: customer.phone,
+        customer_email: customer.email,
         shipping_option: shippingOption.title,
         shipping_amount: shipping,
         cart: summary.items.map((item) => ({
@@ -217,7 +232,20 @@ export async function initializePaystackCheckout(input: {
           size: item.size,
           color: item.color,
         })),
+        custom_fields: [
+          {
+            display_name: "Customer Name",
+            variable_name: "customer_name",
+            value: fullName,
+          },
+          {
+            display_name: "Phone Number",
+            variable_name: "phone_number",
+            value: customer.phone,
+          },
+        ],
       },
+      channels: ["card", "bank", "ussd", "qr", "mobile_money", "bank_transfer"],
     }),
   });
 
@@ -297,6 +325,20 @@ export async function verifyPaystackReference(reference: unknown) {
         },
       },
     });
+
+    const [order] = await supabaseAdminRequest<OrderEmailRow[]>(
+      `orders?select=order_number,customer_email,customer_phone,grand_total,currency,shipping_address&id=eq.${payment.order_id}&limit=1`,
+    );
+
+    if (order?.customer_email) {
+      await sendThankYouEmail({
+        to: order.customer_email,
+        customerName: order.shipping_address?.recipient_name ?? "",
+        orderNumber: order.order_number,
+        total: Number(order.grand_total),
+        currency: order.currency,
+      });
+    }
   }
 
   return {
