@@ -75,5 +75,7 @@ const storeProducts: StoreProduct[] = products.map((product) => {
 
 export async function getProducts(categorySlug: string): Promise<StoreProduct[]> {
   if (categorySlug === "all" || categorySlug === "shop") return storeProducts;
+  if (categorySlug === "mugs") return storeProducts.filter((product) => product.name.toLowerCase().includes("mug"));
+  if (categorySlug === "tote-bags") return storeProducts.filter((product) => product.product_type === "tote-bag");
   return storeProducts.filter((product) => product.categories?.slug === categorySlug);
 }
