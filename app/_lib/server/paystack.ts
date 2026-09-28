@@ -43,7 +43,13 @@ type PaystackVerifyResponse = {
     paid_at?: string;
     customer?: { email?: string };
     gateway_response?: string;
+    metadata?: Record<string, unknown>;
   };
+};
+
+type PaystackErrorResponse = {
+  status?: boolean;
+  message?: string;
 };
 
 type OrderRow = {
@@ -72,10 +78,41 @@ type OrderEmailRow = {
 
 const PAYSTACK_BASE_URL = "https://api.paystack.co";
 
+async function readPaystackJson<T extends PaystackErrorResponse>(response: Response): Promise<T> {
+  const text = await response.text();
+  if (!text) return { status: false, message: "Paystack returned an empty response." } as T;
+
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return {
+      status: false,
+      message: response.ok ? "Paystack returned an unreadable response." : `Paystack request failed with status ${response.status}.`,
+    } as T;
+  }
+}
+
 function getPaystackSecretKey() {
   const secretKey = process.env.PAYSTACK_SECRET_KEY;
   if (!secretKey) throw new Error("Paystack secret key is not configured.");
   return secretKey;
+}
+
+function getString(value: unknown) {
+  return typeof value === "string" ? value : "";
+}
+
+function getNumber(value: unknown) {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim()) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function reportServerError(message: string, error: unknown) {
+  console.error(message, error instanceof Error ? error.message : error);
 }
 
 export function getSiteUrl(request?: Request) {
@@ -131,6 +168,9 @@ export async function initializePaystackCheckout(input: {
   const shipping = deliveryFee(summary.subtotal, shippingOption.id);
   const total = summary.subtotal + shipping;
   const reference = `DK-${Date.now()}-${crypto.randomUUID().slice(0, 8)}`.toUpperCase();
+  let orderId: string | null = null;
+  let orderNumber = reference;
+  let databaseError: string | null = null;
   const fullName = `${customer.firstName} ${customer.lastName}`.trim();
   const addressPayload = {
     recipient_name: fullName,
@@ -142,90 +182,104 @@ export async function initializePaystackCheckout(input: {
     country_code: customer.country.toLowerCase() === "nigeria" ? "NG" : null,
   };
 
-  const [order] = await supabaseAdminRequest<OrderRow[]>("orders", {
-    method: "POST",
-    prefer: "return=representation",
-    body: {
-      customer_email: customer.email,
-      customer_phone: customer.phone,
-      currency,
-      subtotal: summary.subtotal,
-      shipping_total: shipping,
-      grand_total: total,
-      shipping_address: addressPayload,
-      billing_address: addressPayload,
-      customer_note: shippingOption.id === "pickup-kubwa" ? "Pickup at Arab Road, Kubwa, Abuja" : `Paystack checkout · ${shippingOption.title}`,
-      metadata: {
+  try {
+    const [order] = await supabaseAdminRequest<OrderRow[]>("orders", {
+      method: "POST",
+      prefer: "return=representation",
+      body: {
+        customer_email: customer.email,
+        customer_phone: customer.phone,
+        currency,
+        subtotal: summary.subtotal,
+        shipping_total: shipping,
+        grand_total: total,
+        shipping_address: addressPayload,
+        billing_address: addressPayload,
+        customer_note: shippingOption.id === "pickup-kubwa" ? "Pickup at Arab Road, Kubwa, Abuja" : `Paystack checkout · ${shippingOption.title}`,
+        metadata: {
+          provider: "paystack",
+          provider_reference: reference,
+          source: "storefront",
+          shipping_option: shippingOption,
+        },
+      },
+    });
+
+    orderId = order.id;
+    orderNumber = order.order_number;
+
+    await supabaseAdminRequest("order_items", {
+      method: "POST",
+      body: summary.items.map((item) => ({
+        order_id: order.id,
+        product_name: item.product.name,
+        sku: `DK-${item.product.id}`,
+        size: item.size,
+        color: item.color,
+        quantity: item.quantity,
+        unit_price: item.product.price,
+        line_total: item.lineTotal,
+        product_snapshot: {
+          storefront_id: item.product.id,
+          name: item.product.name,
+          category: item.product.category,
+          collection: item.product.collection,
+          image: item.product.image,
+          scripture: item.product.scripture,
+        },
+      })),
+    });
+
+    await supabaseAdminRequest("payments", {
+      method: "POST",
+      body: {
+        order_id: order.id,
         provider: "paystack",
         provider_reference: reference,
-        source: "storefront",
-        shipping_option: shippingOption,
+        status: "pending",
+        amount: total,
+        currency,
+        metadata: {
+          order_number: order.order_number,
+          initialized_from: "storefront",
+          shipping_option: shippingOption,
+        },
       },
-    },
-  });
-
-  await supabaseAdminRequest("order_items", {
-    method: "POST",
-    body: summary.items.map((item) => ({
-      order_id: order.id,
-      product_name: item.product.name,
-      sku: `DK-${item.product.id}`,
-      size: item.size,
-      color: item.color,
-      quantity: item.quantity,
-      unit_price: item.product.price,
-      line_total: item.lineTotal,
-      product_snapshot: {
-        storefront_id: item.product.id,
-        name: item.product.name,
-        category: item.product.category,
-        collection: item.product.collection,
-        image: item.product.image,
-        scripture: item.product.scripture,
-      },
-    })),
-  });
-
-  await supabaseAdminRequest("payments", {
-    method: "POST",
-    body: {
-      order_id: order.id,
-      provider: "paystack",
-      provider_reference: reference,
-      status: "pending",
-      amount: total,
-      currency,
-      metadata: {
-        order_number: order.order_number,
-        initialized_from: "storefront",
-        shipping_option: shippingOption,
-      },
-    },
-  });
+    });
+  } catch (error) {
+    databaseError = error instanceof Error ? error.message : "Unable to save order before payment.";
+    reportServerError("Supabase order sync failed before Paystack checkout.", error);
+  }
 
   const siteUrl = getSiteUrl(input.request);
-  const paystackResponse = await fetch(`${PAYSTACK_BASE_URL}/transaction/initialize`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${getPaystackSecretKey()}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+  let paystackResponse: Response;
+  try {
+    paystackResponse = await fetch(`${PAYSTACK_BASE_URL}/transaction/initialize`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${getPaystackSecretKey()}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
       amount: Math.round(total * 100),
       email: customer.email,
       currency,
       reference,
-      callback_url: `${siteUrl}/payment/callback?reference=${encodeURIComponent(reference)}`,
+      callback_url: `${siteUrl}/payment/callback`,
       metadata: {
-        order_id: order.id,
-        order_number: order.order_number,
+        order_id: orderId,
+        order_number: orderNumber,
         customer_name: fullName,
         customer_first_name: customer.firstName,
         customer_last_name: customer.lastName,
         customer_phone: customer.phone,
         customer_email: customer.email,
+        expected_amount: total,
+        expected_currency: currency,
         shipping_option: shippingOption.title,
         shipping_amount: shipping,
+        shipping_address: addressPayload,
+        database_sync_error: databaseError,
         cart: summary.items.map((item) => ({
           name: item.product.name,
           quantity: item.quantity,
@@ -245,11 +299,15 @@ export async function initializePaystackCheckout(input: {
           },
         ],
       },
-      channels: ["card", "bank", "ussd", "qr", "mobile_money", "bank_transfer"],
-    }),
-  });
+        channels: ["card", "bank", "ussd", "qr", "mobile_money", "bank_transfer"],
+      }),
+    });
+  } catch (error) {
+    reportServerError("Paystack initialization request failed.", error);
+    throw new Error("We could not connect to Paystack. Please try again in a moment.");
+  }
 
-  const payload = await paystackResponse.json() as PaystackInitializeResponse;
+  const payload = await readPaystackJson<PaystackInitializeResponse>(paystackResponse);
   if (!paystackResponse.ok || !payload.status || !payload.data?.authorization_url) {
     await markPaymentFailed(reference, payload);
     throw new Error(payload.message || "Paystack could not start this payment.");
@@ -258,7 +316,7 @@ export async function initializePaystackCheckout(input: {
   return {
     authorizationUrl: payload.data.authorization_url,
     reference,
-    orderNumber: order.order_number,
+    orderNumber,
     total,
   };
 }
@@ -274,45 +332,55 @@ export async function verifyPaystackReference(reference: unknown) {
   const cleanReference = normalizePaystackReference(reference);
   if (!cleanReference) throw new Error("Missing Paystack reference.");
 
-  const [payment] = await supabaseAdminRequest<PaymentRow[]>(
-    `payments?select=id,order_id,status,amount,currency&provider=eq.paystack&provider_reference=eq.${encodeURIComponent(cleanReference)}&limit=1`,
-  );
-
-  if (!payment) throw new Error("Payment reference was not found.");
+  let payment: PaymentRow | undefined;
+  try {
+    [payment] = await supabaseAdminRequest<PaymentRow[]>(
+      `payments?select=id,order_id,status,amount,currency&provider=eq.paystack&provider_reference=eq.${encodeURIComponent(cleanReference)}&limit=1`,
+    );
+  } catch (error) {
+    reportServerError("Supabase payment lookup failed during Paystack verification.", error);
+  }
 
   const response = await fetch(`${PAYSTACK_BASE_URL}/transaction/verify/${encodeURIComponent(cleanReference)}`, {
     headers: { Authorization: `Bearer ${getPaystackSecretKey()}` },
     cache: "no-store",
   });
-  const payload = await response.json() as PaystackVerifyResponse;
+  const payload = await readPaystackJson<PaystackVerifyResponse>(response);
 
   if (!response.ok || !payload.status || !payload.data) {
     await markPaymentFailed(cleanReference, payload);
     return { ok: false, status: "failed", message: payload.message || "Payment verification failed." };
   }
 
-  const expectedAmount = Math.round(Number(payment.amount) * 100);
-  const amountMatches = payload.data.amount === expectedAmount && payload.data.currency === payment.currency;
+  const metadata = payload.data.metadata ?? {};
+  const expectedTotal = payment ? Number(payment.amount) : getNumber(metadata.expected_amount);
+  const expectedCurrency = payment?.currency ?? getString(metadata.expected_currency) ?? payload.data.currency;
+  const expectedAmount = expectedTotal == null ? null : Math.round(expectedTotal * 100);
+  const amountMatches = expectedAmount === null
+    ? true
+    : payload.data.amount === expectedAmount && payload.data.currency.toUpperCase() === expectedCurrency.toUpperCase();
   const isSuccessful = payload.data.status === "success" && amountMatches;
   const nextPaymentStatus = isSuccessful ? "paid" : "failed";
 
-  await supabaseAdminRequest(`payments?provider=eq.paystack&provider_reference=eq.${encodeURIComponent(cleanReference)}`, {
-    method: "PATCH",
-    body: {
-      status: nextPaymentStatus,
-      payment_method: payload.data.channel ?? null,
-      paid_at: isSuccessful ? payload.data.paid_at ?? new Date().toISOString() : null,
-      metadata: {
-        verified_at: new Date().toISOString(),
-        amount_matches: amountMatches,
-        paystack_status: payload.data.status,
-        gateway_response: payload.data.gateway_response,
-        paystack: payload.data,
+  if (payment) {
+    await supabaseAdminRequest(`payments?provider=eq.paystack&provider_reference=eq.${encodeURIComponent(cleanReference)}`, {
+      method: "PATCH",
+      body: {
+        status: nextPaymentStatus,
+        payment_method: payload.data.channel ?? null,
+        paid_at: isSuccessful ? payload.data.paid_at ?? new Date().toISOString() : null,
+        metadata: {
+          verified_at: new Date().toISOString(),
+          amount_matches: amountMatches,
+          paystack_status: payload.data.status,
+          gateway_response: payload.data.gateway_response,
+          paystack: payload.data,
+        },
       },
-    },
-  });
+    });
+  }
 
-  if (isSuccessful) {
+  if (isSuccessful && payment) {
     await supabaseAdminRequest(`orders?id=eq.${payment.order_id}`, {
       method: "PATCH",
       body: {
@@ -339,6 +407,14 @@ export async function verifyPaystackReference(reference: unknown) {
         currency: order.currency,
       });
     }
+  } else if (isSuccessful && getString(metadata.customer_email)) {
+    await sendThankYouEmail({
+      to: getString(metadata.customer_email),
+      customerName: getString(metadata.customer_name),
+      orderNumber: getString(metadata.order_number) || cleanReference,
+      total: expectedTotal ?? payload.data.amount / 100,
+      currency: expectedCurrency || payload.data.currency,
+    });
   }
 
   return {
@@ -350,16 +426,20 @@ export async function verifyPaystackReference(reference: unknown) {
 }
 
 async function markPaymentFailed(reference: string, payload: unknown) {
-  await supabaseAdminRequest(`payments?provider=eq.paystack&provider_reference=eq.${encodeURIComponent(reference)}`, {
-    method: "PATCH",
-    body: {
-      status: "failed",
-      metadata: {
-        failed_at: new Date().toISOString(),
-        paystack: payload,
+  try {
+    await supabaseAdminRequest(`payments?provider=eq.paystack&provider_reference=eq.${encodeURIComponent(reference)}`, {
+      method: "PATCH",
+      body: {
+        status: "failed",
+        metadata: {
+          failed_at: new Date().toISOString(),
+          paystack: payload,
+        },
       },
-    },
-  });
+    });
+  } catch (error) {
+    reportServerError("Supabase payment failure sync failed.", error);
+  }
 }
 
 function validateCustomer(customer: Customer, allowPickupAddress = false): Customer {

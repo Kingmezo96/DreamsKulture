@@ -4,7 +4,8 @@ import { verifyPaystackReference } from "@/app/_lib/server/paystack";
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
-  const reference = new URL(request.url).searchParams.get("reference") ?? "";
+  const searchParams = new URL(request.url).searchParams;
+  const reference = searchParams.get("reference") ?? searchParams.get("trxref") ?? "";
 
   try {
     const result = await verifyPaystackReference(reference);

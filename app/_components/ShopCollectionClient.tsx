@@ -38,16 +38,12 @@ export default function ShopCollectionClient({ config, products }: { config: Col
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cart, setCart] = useState<CartItem[]>(readStoredCart);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [shippingOptionId, setShippingOptionId] = useState<ShippingOptionId>(shippingOptions[0].id);
-
-  useEffect(() => {
-    setCart(readStoredCart());
-  }, []);
 
   useEffect(() => {
     window.localStorage.setItem(cartStorageKey, JSON.stringify(cart));
