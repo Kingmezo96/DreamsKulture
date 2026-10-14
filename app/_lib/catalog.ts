@@ -56,11 +56,9 @@ function getVariantKind(product: (typeof products)[number]) {
 }
 
 function getVariantImages(product: (typeof products)[number], kind: string | null) {
-  if (!kind) return {};
-  return Object.fromEntries(product.colors.map((color) => [
-    color,
-    `/campaign/variants/rendered/${kind}-${slugify(color)}.jpg`,
-  ]));
+  void product;
+  void kind;
+  return {};
 }
 
 export const shopCategories = [

@@ -229,10 +229,6 @@ export default function ShopCollectionClient({ config, products }: { config: Col
                   {product.featured && <span>{index % 2 === 0 ? "New" : "Top"}</span>}
                   <i aria-hidden="true">♡</i>
                   <img src={activeProductImage(product, activeCardColor(product))} alt={`${product.name} in ${activeCardColor(product)}`} />
-                  {product.variant_kind && <div className={`shop-card-design shop-card-design--${product.variant_kind} ${lightGarmentColours.has(activeCardColor(product)) ? "shop-card-design--dark-ink" : ""}`} aria-hidden="true">
-                    <b>{product.design_text}</b>
-                    {product.variant_kind === "couples" && <b>{product.design_text}</b>}
-                  </div>}
                   <em>Buy now →</em>
                 </button>
                 <small>{product.product_type.replace("-", " ")}</small>
@@ -259,10 +255,6 @@ export default function ShopCollectionClient({ config, products }: { config: Col
           <div className="product-modal__art">
             <div className={`variant-preview variant-preview--${selected.variant_kind ?? "photo"} ${lightGarmentColours.has(selectedColor) ? "variant-preview--dark-ink" : ""}`}>
               <img src={selectedVariantImage} alt={`${selected.name} in ${selectedColor}`} />
-              {selected.variant_kind && <div className="variant-preview__design" aria-hidden="true">
-                <span>{selected.design_text}</span>
-                {selected.variant_kind === "couples" && <span>{selected.design_text}</span>}
-              </div>}
             </div>
           </div>
           <div className="product-modal__content">
