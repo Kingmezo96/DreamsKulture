@@ -93,10 +93,10 @@ export default function ShopCollectionClient({ config, products }: { config: Col
 
   const toggleColor = (color: string) => setSelectedColors((current) => current.includes(color) ? current.filter((item) => item !== color) : [...current, color]);
 
-  const activeCardColor = (product: StoreProduct) => cardColors[product.id] ?? product.color_options[0] ?? "Default";
+  const activeCardColor = (product: StoreProduct) => cardColors[product.id] ?? product.default_color ?? "";
   const activeProductImage = (product: StoreProduct, color: string) => product.variant_images[color] ?? product.image_urls[0];
 
-  const openProduct = (product: StoreProduct, color = activeCardColor(product)) => {
+  const openProduct = (product: StoreProduct, color = activeCardColor(product) || product.color_options[0] || "Default") => {
     const sizes = getProductSizes(product);
     setSelected(product);
     setSelectedSize(sizes[0] ?? "Default");
@@ -228,7 +228,7 @@ export default function ShopCollectionClient({ config, products }: { config: Col
                 <button className="shop-product-card__image" onClick={() => openProduct(product)} aria-label={`Buy ${product.name}`}>
                   {product.featured && <span>{index % 2 === 0 ? "New" : "Top"}</span>}
                   <i aria-hidden="true">♡</i>
-                  <img src={activeProductImage(product, activeCardColor(product))} alt={`${product.name} in ${activeCardColor(product)}`} />
+                  <img src={activeProductImage(product, activeCardColor(product))} alt={activeCardColor(product) ? `${product.name} in ${activeCardColor(product)}` : product.name} />
                   <em>Buy now →</em>
                 </button>
                 <small>{product.product_type.replace("-", " ")}</small>

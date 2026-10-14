@@ -11,6 +11,7 @@ export type StoreProduct = {
   image_urls: string[];
   design_text: string;
   variant_kind: string | null;
+  default_color: string | null;
   variant_images: Record<string, string>;
   size_options: string[];
   color_options: string[];
@@ -55,10 +56,38 @@ function getVariantKind(product: (typeof products)[number]) {
   return null;
 }
 
+const variantImageConfig: Record<number, { prefix: string; originalColor?: string }> = {
+  1: { prefix: "women-pray-boldly", originalColor: "Green" },
+  2: { prefix: "always-doing-wonders-shirt", originalColor: "Black" },
+  3: { prefix: "king-priest-shirt", originalColor: "Maroon" },
+  4: { prefix: "not-forsaken-hoodie" },
+  5: { prefix: "god-is-good-hoodie", originalColor: "Black" },
+  6: { prefix: "gods-masterpiece-sweatshirt", originalColor: "Black" },
+  7: { prefix: "be-the-light-sweatshirt", originalColor: "White" },
+  8: { prefix: "walk-by-faith-sweatshirt", originalColor: "Black" },
+  9: { prefix: "be-salty-stay-lit-sweatshirt" },
+  10: { prefix: "let-god-carry-it-sweatshirt" },
+  11: { prefix: "cross-love-cap", originalColor: "Black" },
+  12: { prefix: "cord-of-three-couples-tee" },
+  13: { prefix: "gods-masterpiece-mug", originalColor: "White" },
+  15: { prefix: "walk-by-faith-shirt", originalColor: "Black" },
+  16: { prefix: "grace-upon-grace-shirt", originalColor: "White" },
+  17: { prefix: "pray-big-shirt", originalColor: "Green" },
+  18: { prefix: "chosen-shirt", originalColor: "Maroon" },
+};
+
 function getVariantImages(product: (typeof products)[number], kind: string | null) {
-  void product;
-  void kind;
-  return {};
+  if (!kind) return {};
+
+  const config = variantImageConfig[product.id];
+  if (!config) return {};
+
+  return Object.fromEntries(product.colors.map((color) => [
+    color,
+    color === config.originalColor
+      ? product.image
+      : `/campaign/variants/products/${config.prefix}-${slugify(color)}.jpg`,
+  ]));
 }
 
 export const shopCategories = [
@@ -87,6 +116,7 @@ const storeProducts: StoreProduct[] = products.map((product) => {
     image_urls: [product.image],
     design_text: product.message,
     variant_kind: variantKind,
+    default_color: variantImageConfig[product.id]?.originalColor ?? null,
     variant_images: getVariantImages(product, variantKind),
     size_options: product.sizes,
     color_options: product.colors,
