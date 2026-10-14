@@ -52,6 +52,7 @@ export default function ShopCollectionClient({ config, products }: { config: Col
   const [sort, setSort] = useState("featured");
   const [maxPrice, setMaxPrice] = useState(ceiling);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [cardColors, setCardColors] = useState<Record<string, string>>({});
   const [selected, setSelected] = useState<StoreProduct | null>(null);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
@@ -92,11 +93,14 @@ export default function ShopCollectionClient({ config, products }: { config: Col
 
   const toggleColor = (color: string) => setSelectedColors((current) => current.includes(color) ? current.filter((item) => item !== color) : [...current, color]);
 
-  const openProduct = (product: StoreProduct) => {
+  const activeCardColor = (product: StoreProduct) => cardColors[product.id] ?? product.color_options[0] ?? "Default";
+  const activeProductImage = (product: StoreProduct, color: string) => product.variant_images[color] ?? product.image_urls[0];
+
+  const openProduct = (product: StoreProduct, color = activeCardColor(product)) => {
     const sizes = getProductSizes(product);
     setSelected(product);
     setSelectedSize(sizes[0] ?? "Default");
-    setSelectedColor(product.color_options[0] ?? "Default");
+    setSelectedColor(color);
     setSelectedQuantity(1);
   };
 
@@ -224,13 +228,17 @@ export default function ShopCollectionClient({ config, products }: { config: Col
                 <button className="shop-product-card__image" onClick={() => openProduct(product)} aria-label={`Buy ${product.name}`}>
                   {product.featured && <span>{index % 2 === 0 ? "New" : "Top"}</span>}
                   <i aria-hidden="true">♡</i>
-                  <img src={product.image_urls[0]} alt={product.name} />
+                  <img src={activeProductImage(product, activeCardColor(product))} alt={`${product.name} in ${activeCardColor(product)}`} />
+                  {product.variant_kind && <div className={`shop-card-design shop-card-design--${product.variant_kind} ${lightGarmentColours.has(activeCardColor(product)) ? "shop-card-design--dark-ink" : ""}`} aria-hidden="true">
+                    <b>{product.design_text}</b>
+                    {product.variant_kind === "couples" && <b>{product.design_text}</b>}
+                  </div>}
                   <em>Buy now →</em>
                 </button>
                 <small>{product.product_type.replace("-", " ")}</small>
                 <h3>{product.name}</h3>
                 {product.color_options.length > 1 && <div className="product-colour-swatches" aria-label={`${product.color_options.length} colours available`}>
-                  {product.color_options.map((color) => <i key={color} title={color} style={{ backgroundColor: colourValues[color] ?? "#bbb" }} />)}
+                  {product.color_options.map((color) => <button type="button" key={color} className={activeCardColor(product) === color ? "active" : ""} title={color} aria-label={`Show ${product.name} in ${color}`} onClick={() => setCardColors((current) => ({ ...current, [product.id]: color }))}><i style={{ backgroundColor: colourValues[color] ?? "#bbb" }} /></button>)}
                 </div>}
                 <div className="shop-product-card__bottom">
                   <strong>{money(Number(product.price))}</strong>
