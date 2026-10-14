@@ -9,6 +9,9 @@ export type StoreProduct = {
   product_type: string;
   price: number;
   image_urls: string[];
+  design_text: string;
+  variant_kind: string | null;
+  variant_images: Record<string, string>;
   size_options: string[];
   color_options: string[];
   frame_size_options: string[];
@@ -42,6 +45,24 @@ const productTypeSlugs: Record<string, string> = {
 
 const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
+function getVariantKind(product: (typeof products)[number]) {
+  if (product.category === "Shirts") return "tshirt";
+  if (product.category === "Hoodies") return "hoodie";
+  if (product.category === "Sweatshirts") return "sweatshirt";
+  if (product.category === "Caps") return "cap";
+  if (product.category === "Couples") return "couples";
+  if (product.name.toLowerCase().includes("mug")) return "mug";
+  return null;
+}
+
+function getVariantImages(product: (typeof products)[number], kind: string | null) {
+  if (!kind) return {};
+  return Object.fromEntries(product.colors.map((color) => [
+    color,
+    `/campaign/variants/rendered/${kind}-${slugify(color)}.jpg`,
+  ]));
+}
+
 export const shopCategories = [
   ["All products", "/shop", "all"],
   ["Shirts", "/shirts", "shirts"],
@@ -55,6 +76,7 @@ export const shopCategories = [
 
 const storeProducts: StoreProduct[] = products.map((product) => {
   const categorySlug = shopCategorySlugs[product.category] ?? slugify(product.category);
+  const variantKind = getVariantKind(product);
 
   return {
     id: String(product.id),
@@ -65,6 +87,9 @@ const storeProducts: StoreProduct[] = products.map((product) => {
     product_type: productTypeSlugs[product.category] ?? slugify(product.category),
     price: product.price,
     image_urls: [product.image],
+    design_text: product.message,
+    variant_kind: variantKind,
+    variant_images: getVariantImages(product, variantKind),
     size_options: product.sizes,
     color_options: product.colors,
     frame_size_options: [],

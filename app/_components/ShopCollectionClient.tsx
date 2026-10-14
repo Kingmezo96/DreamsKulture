@@ -14,6 +14,24 @@ type CartItem = StoreProduct & {
 
 const cartStorageKey = "dreams-kulture-cart";
 
+const colourValues: Record<string, string> = {
+  White: "#f7f5ef",
+  Black: "#181818",
+  Green: "#27543a",
+  Blue: "#174ea6",
+  Yellow: "#e3b52f",
+  Maroon: "#681f32",
+  "Coffee Brown": "#815b3a",
+  "Chocolate Brown": "#4a2c20",
+  Red: "#b8242f",
+  "Army Green": "#4b5320",
+  "Navy Blue": "#17264a",
+  Pink: "#e8b4c2",
+  Blush: "#dfb1aa",
+};
+
+const lightGarmentColours = new Set(["White", "Yellow", "Pink", "Blush"]);
+
 function getProductSizes(product: StoreProduct) {
   return product.frame_size_options.length ? product.frame_size_options : product.size_options;
 }
@@ -70,6 +88,7 @@ export default function ShopCollectionClient({ config, products }: { config: Col
   const subtotal = cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
   const selectedShipping = getShippingOption(shippingOptionId);
   const delivery = deliveryFee(subtotal, shippingOptionId);
+  const selectedVariantImage = selected?.variant_images[selectedColor] ?? selected?.image_urls[0] ?? "";
 
   const toggleColor = (color: string) => setSelectedColors((current) => current.includes(color) ? current.filter((item) => item !== color) : [...current, color]);
 
@@ -88,7 +107,7 @@ export default function ShopCollectionClient({ config, products }: { config: Col
       if (existing) {
         return current.map((item) => item.id === selected.id && item.size === selectedSize && item.color === selectedColor ? { ...item, quantity: item.quantity + selectedQuantity } : item);
       }
-      return [...current, { ...selected, size: selectedSize, color: selectedColor, quantity: selectedQuantity }];
+      return [...current, { ...selected, image_urls: [selectedVariantImage], size: selectedSize, color: selectedColor, quantity: selectedQuantity }];
     });
     setSelected(null);
     setCartOpen(true);
@@ -210,6 +229,9 @@ export default function ShopCollectionClient({ config, products }: { config: Col
                 </button>
                 <small>{product.product_type.replace("-", " ")}</small>
                 <h3>{product.name}</h3>
+                {product.color_options.length > 1 && <div className="product-colour-swatches" aria-label={`${product.color_options.length} colours available`}>
+                  {product.color_options.map((color) => <i key={color} title={color} style={{ backgroundColor: colourValues[color] ?? "#bbb" }} />)}
+                </div>}
                 <div className="shop-product-card__bottom">
                   <strong>{money(Number(product.price))}</strong>
                   <span>{getProductSizes(product).slice(0, 4).join(" · ")}</span>
@@ -226,7 +248,15 @@ export default function ShopCollectionClient({ config, products }: { config: Col
         <button className="overlay__backdrop" onClick={() => setSelected(null)} aria-label="Close product details" />
         <div className="product-modal">
           <button className="close-button" onClick={() => setSelected(null)} aria-label="Close">×</button>
-          <div className="product-modal__art"><div className="product-art product-art--photo"><img src={selected.image_urls[0]} alt={selected.name} /></div></div>
+          <div className="product-modal__art">
+            <div className={`variant-preview variant-preview--${selected.variant_kind ?? "photo"} ${lightGarmentColours.has(selectedColor) ? "variant-preview--dark-ink" : ""}`}>
+              <img src={selectedVariantImage} alt={`${selected.name} in ${selectedColor}`} />
+              {selected.variant_kind && <div className="variant-preview__design" aria-hidden="true">
+                <span>{selected.design_text}</span>
+                {selected.variant_kind === "couples" && <span>{selected.design_text}</span>}
+              </div>}
+            </div>
+          </div>
           <div className="product-modal__content">
             <span className="category-subtitle"><b>{selected.categories?.name ?? selected.product_type}</b></span>
             <h2>{selected.name}</h2>
@@ -234,7 +264,7 @@ export default function ShopCollectionClient({ config, products }: { config: Col
             <p>{selected.short_description}</p>
             {selected.scripture && <blockquote>Inspired by {selected.scripture}</blockquote>}
             <fieldset><legend>Choose size</legend><div className="option-row">{getProductSizes(selected).map((size) => <button type="button" key={size} className={selectedSize === size ? "active" : ""} onClick={() => setSelectedSize(size)}>{size}</button>)}</div></fieldset>
-            <fieldset><legend>Choose colour</legend><div className="option-row">{selected.color_options.map((color) => <button type="button" key={color} className={selectedColor === color ? "active" : ""} onClick={() => setSelectedColor(color)}>{color}</button>)}</div></fieldset>
+            <fieldset><legend>Choose colour</legend><div className="option-row option-row--colours">{selected.color_options.map((color) => <button type="button" key={color} className={selectedColor === color ? "active" : ""} onClick={() => setSelectedColor(color)}><i style={{ backgroundColor: colourValues[color] ?? "#bbb" }} aria-hidden="true" />{color}</button>)}</div></fieldset>
             <div className="add-row"><div className="quantity"><button onClick={() => setSelectedQuantity(Math.max(1, selectedQuantity - 1))}>−</button><span>{selectedQuantity}</span><button onClick={() => setSelectedQuantity(selectedQuantity + 1)}>＋</button></div><button className="mol-button" onClick={addToCart}><span>Add to bag · {money(Number(selected.price) * selectedQuantity)}</span></button></div>
             <div className="product-facts"><span>Secure Paystack checkout</span><span>Pickup or delivery</span><span>WhatsApp support</span></div>
           </div>
