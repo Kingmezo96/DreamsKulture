@@ -86,7 +86,7 @@ function getVariantImages(product: (typeof products)[number], kind: string | nul
     color,
     color === config.originalColor
       ? product.image
-      : `/campaign/variants/products/${config.prefix}-${slugify(color)}.jpg`,
+      : `/campaign/variants/products/${config.prefix}-${slugify(color)}.webp`,
   ]));
 }
 
