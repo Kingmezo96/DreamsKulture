@@ -97,11 +97,6 @@ export default function ShopCollectionClient({ config, products }: { config: Col
     products.slice(0, 6).forEach((product) => preloadProductVariants(product, "high"));
 
     const preloadRemaining = () => products.slice(6).forEach((product) => preloadProductVariants(product));
-    if ("requestIdleCallback" in window) {
-      const idleId = window.requestIdleCallback(preloadRemaining, { timeout: 2500 });
-      return () => window.cancelIdleCallback(idleId);
-    }
-
     const timeoutId = window.setTimeout(preloadRemaining, 800);
     return () => window.clearTimeout(timeoutId);
   }, [preloadProductVariants, products]);
