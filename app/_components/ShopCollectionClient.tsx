@@ -100,11 +100,7 @@ export default function ShopCollectionClient({ config, products }: { config: Col
   }, []);
 
   useEffect(() => {
-    products.slice(0, 6).forEach((product) => preloadProductVariants(product, "high"));
-
-    const preloadRemaining = () => products.slice(6).forEach((product) => preloadProductVariants(product));
-    const timeoutId = window.setTimeout(preloadRemaining, 800);
-    return () => window.clearTimeout(timeoutId);
+    products.slice(0, 3).forEach((product) => preloadProductVariants(product, "high"));
   }, [preloadProductVariants, products]);
 
   const colors = useMemo(() => Array.from(new Set(products.flatMap((product) => product.color_options))).slice(0, 8), [products]);
@@ -123,6 +119,21 @@ export default function ShopCollectionClient({ config, products }: { config: Col
       return Number(b.featured) - Number(a.featured);
     });
   }, [products, query, maxPrice, selectedColors, sort]);
+
+  useEffect(() => {
+    const cards = document.querySelectorAll<HTMLElement>(".shop-product-card[data-product-id]");
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const product = products.find((item) => item.id === (entry.target as HTMLElement).dataset.productId);
+        if (product) preloadProductVariants(product, "high");
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: "500px 0px" });
+
+    cards.forEach((card) => observer.observe(card));
+    return () => observer.disconnect();
+  }, [preloadProductVariants, products, visibleProducts]);
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0);
@@ -265,6 +276,7 @@ export default function ShopCollectionClient({ config, products }: { config: Col
             {visibleProducts.map((product, index) => (
               <article
                 className="shop-product-card"
+                data-product-id={product.id}
                 key={product.id}
                 onPointerEnter={() => preloadProductVariants(product, "high")}
                 onFocus={() => preloadProductVariants(product, "high")}
