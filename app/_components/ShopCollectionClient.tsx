@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { shopCategories, type StoreProduct } from "../_lib/catalog";
 import { deliveryFee, getShippingOption, money, shippingOptions, type ShippingOptionId } from "../_lib/storefront-products";
 import type { CollectionConfig } from "./CollectionPage";
@@ -31,6 +31,17 @@ const colourValues: Record<string, string> = {
 };
 
 const lightGarmentColours = new Set(["White", "Yellow", "Pink", "Blush"]);
+const preloadedVariantImages = new Set<string>();
+
+function preloadVariantImage(src: string, priority: "high" | "low" = "low") {
+  if (!src || preloadedVariantImages.has(src) || typeof window === "undefined") return;
+  preloadedVariantImages.add(src);
+  const image = new Image();
+  image.decoding = "async";
+  image.fetchPriority = priority;
+  image.onerror = () => preloadedVariantImages.delete(src);
+  image.src = src;
+}
 
 function getProductSizes(product: StoreProduct) {
   return product.frame_size_options.length ? product.frame_size_options : product.size_options;
@@ -57,7 +68,8 @@ export default function ShopCollectionClient({ config, products }: { config: Col
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedQuantity, setSelectedQuantity] = useState(1);
-  const [cart, setCart] = useState<CartItem[]>(readStoredCart);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartHydrated, setCartHydrated] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
@@ -65,8 +77,34 @@ export default function ShopCollectionClient({ config, products }: { config: Col
   const [shippingOptionId, setShippingOptionId] = useState<ShippingOptionId>(shippingOptions[0].id);
 
   useEffect(() => {
+    const restoreId = window.setTimeout(() => {
+      setCart(readStoredCart());
+      setCartHydrated(true);
+    }, 0);
+    return () => window.clearTimeout(restoreId);
+  }, []);
+
+  useEffect(() => {
+    if (!cartHydrated) return;
     window.localStorage.setItem(cartStorageKey, JSON.stringify(cart));
-  }, [cart]);
+  }, [cart, cartHydrated]);
+
+  const preloadProductVariants = useCallback((product: StoreProduct, priority: "high" | "low" = "low") => {
+    Object.values(product.variant_images).forEach((src) => preloadVariantImage(src, priority));
+  }, []);
+
+  useEffect(() => {
+    products.slice(0, 6).forEach((product) => preloadProductVariants(product, "high"));
+
+    const preloadRemaining = () => products.slice(6).forEach((product) => preloadProductVariants(product));
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(preloadRemaining, { timeout: 2500 });
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timeoutId = window.setTimeout(preloadRemaining, 800);
+    return () => window.clearTimeout(timeoutId);
+  }, [preloadProductVariants, products]);
 
   const colors = useMemo(() => Array.from(new Set(products.flatMap((product) => product.color_options))).slice(0, 8), [products]);
   const visibleProducts = useMemo(() => {
@@ -224,7 +262,13 @@ export default function ShopCollectionClient({ config, products }: { config: Col
 
           {visibleProducts.length > 0 ? <div className="shop-product-grid">
             {visibleProducts.map((product, index) => (
-              <article className="shop-product-card" key={product.id}>
+              <article
+                className="shop-product-card"
+                key={product.id}
+                onPointerEnter={() => preloadProductVariants(product, "high")}
+                onFocus={() => preloadProductVariants(product, "high")}
+                onTouchStart={() => preloadProductVariants(product, "high")}
+              >
                 <button className="shop-product-card__image" onClick={() => openProduct(product)} aria-label={`Buy ${product.name}`}>
                   {product.featured && <span>{index % 2 === 0 ? "New" : "Top"}</span>}
                   <i aria-hidden="true">♡</i>
