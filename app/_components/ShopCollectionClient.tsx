@@ -32,6 +32,7 @@ const colourValues: Record<string, string> = {
 
 const lightGarmentColours = new Set(["White", "Yellow", "Pink", "Blush"]);
 const preloadedVariantImages = new Set<string>();
+const pendingVariantImages = new Map<string, HTMLImageElement>();
 
 function preloadVariantImage(src: string, priority: "high" | "low" = "low") {
   if (!src || preloadedVariantImages.has(src) || typeof window === "undefined") return;
@@ -39,7 +40,12 @@ function preloadVariantImage(src: string, priority: "high" | "low" = "low") {
   const image = new Image();
   image.decoding = "async";
   image.fetchPriority = priority;
-  image.onerror = () => preloadedVariantImages.delete(src);
+  image.onload = () => pendingVariantImages.delete(src);
+  image.onerror = () => {
+    pendingVariantImages.delete(src);
+    preloadedVariantImages.delete(src);
+  };
+  pendingVariantImages.set(src, image);
   image.src = src;
 }
 
